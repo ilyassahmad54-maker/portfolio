@@ -11,7 +11,7 @@ import {
   ArrowUpRight,
   CheckCircle2,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import SectionHeading from './SectionHeading';
 
 const categories = [
@@ -24,8 +24,16 @@ const categories = [
 type Category = (typeof categories)[number];
 
 export default function Projects() {
-  const { projects } = portfolioData;
+  const { data, showToast } = usePortfolio();
+  const { projects } = data;
   const [activeCategory, setActiveCategory] = useState<Category>('All');
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, url?: string) => {
+    if (!url || url === '#' || url.trim() === '') {
+      e.preventDefault();
+      showToast("Link coming soon — I'm still uploading this project.");
+    }
+  };
 
   const filteredProjects =
     activeCategory === 'All'
@@ -83,6 +91,7 @@ export default function Projects() {
                       src={project.image}
                       alt={project.title}
                       fill
+                      unoptimized={project.image.startsWith('data:')}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     />
@@ -146,26 +155,36 @@ export default function Projects() {
                 {/* Card Action Links */}
                 <div className="p-6 pt-0 mt-2 flex items-center gap-3">
                   <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={project.githubUrl || '#'}
+                    onClick={(e) => handleLinkClick(e, project.githubUrl)}
+                    target={project.githubUrl && project.githubUrl !== '#' ? '_blank' : undefined}
+                    rel={project.githubUrl && project.githubUrl !== '#' ? 'noopener noreferrer' : undefined}
                     className="flex-1 inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700/70 transition-colors"
                   >
                     <Github className="w-4 h-4" />
                     <span>Source Code</span>
                   </a>
 
-                  {project.liveDemoUrl && (
-                    <a
-                      href={project.liveDemoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-1 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-accent shadow-sm hover:shadow-cyan-500/20 transition-all"
-                    >
-                      <span>Demo</span>
-                      <ArrowUpRight className="w-4 h-4" />
-                    </a>
-                  )}
+                  <a
+                    href={project.demoUrl || project.liveDemoUrl || '#'}
+                    onClick={(e) => handleLinkClick(e, project.demoUrl || project.liveDemoUrl || '#')}
+                    target={
+                      (project.demoUrl && project.demoUrl !== '#') ||
+                      (project.liveDemoUrl && project.liveDemoUrl !== '#')
+                        ? '_blank'
+                        : undefined
+                    }
+                    rel={
+                      (project.demoUrl && project.demoUrl !== '#') ||
+                      (project.liveDemoUrl && project.liveDemoUrl !== '#')
+                        ? 'noopener noreferrer'
+                        : undefined
+                    }
+                    className="flex-1 inline-flex items-center justify-center gap-1 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-accent shadow-sm hover:shadow-cyan-500/20 transition-all"
+                  >
+                    <span>Demo</span>
+                    <ArrowUpRight className="w-4 h-4" />
+                  </a>
                 </div>
               </motion.div>
             ))}

@@ -60,8 +60,8 @@ export const portfolioData: PortfolioData = {
     // EDIT: Path to your profile picture in the /public folder
     profileImage: '/assets/profile.jpg',
 
-    // EDIT: Your Formspree form endpoint for the contact form (e.g., https://formspree.io/f/your_form_id)
-    formspreeEndpoint: 'https://formspree.io/f/YOUR_FORMSPREE_ID',
+    // EDIT: Your Formspree form endpoint for the contact form
+    formspreeEndpoint: 'https://formspree.io/f/mdeazelj',
   },
 
   // EDIT: Update your social media and external profile links
@@ -70,8 +70,8 @@ export const portfolioData: PortfolioData = {
       platform: 'github',
       label: 'GitHub',
       // EDIT: Replace with your actual GitHub profile URL
-      url: 'https://github.com/ilyasahmad',
-      username: 'ilyasahmad',
+      url: 'https://github.com/ilyassahmad54-maker',
+      username: 'ilyassahmad54-maker',
     },
     {
       platform: 'linkedin',
@@ -245,7 +245,24 @@ export const portfolioData: PortfolioData = {
     },
   ],
 
-  // EDIT: Featured portfolio projects with slugs matching files in /public/assets/projects/[slug].jpg
+  /**
+   * =======================================================================
+   * PROJECTS STATUS & REAL LINKS CHECKLIST:
+   * =======================================================================
+   * [✓] Helmet Detection (YOLO) — Real GitHub link configured:
+   *     https://github.com/ilyassahmad54-maker/Helmet_Detection_Project
+   * [ ] Multimodal AI Pipeline — Pending real link (placeholder '#')
+   * [ ] DiabetesCare Prediction System — Pending real link (placeholder '#')
+   * [ ] Customer Segmentation Analysis — Pending real link (placeholder '#')
+   * [ ] Student AI Usage Analytics Dashboard — Pending real link (placeholder '#')
+   * [ ] Heart Disease Predictive System — Pending real link (placeholder '#')
+   *
+   * NOTE: When a button URL is set to "#", clicking it on the live site
+   * displays an animated toast: "Link coming soon — I'm still uploading this project."
+   * Once you paste a real URL starting with http/https, clicking it opens
+   * directly in a new tab.
+   * =======================================================================
+   */
   projects: [
     {
       id: 'proj-multimodal-ai',
@@ -257,9 +274,10 @@ export const portfolioData: PortfolioData = {
         'A modular multimodal intelligence pipeline that couples deep visual feature extraction with NLP-based semantic understanding. Implements automated image preprocessing, Vision Transformer representation, and multi-stage downstream inference.',
       image: '/assets/projects/multimodal-ai.jpg',
       tags: ['Multimodal AI', 'PyTorch', 'Vision Transformers', 'Computer Vision', 'Deep Learning'],
-      // EDIT: Replace with your actual project GitHub URL
-      githubUrl: 'https://github.com/ilyasahmad/multimodal-ai-pipeline',
-      liveDemoUrl: 'https://github.com/ilyasahmad/multimodal-ai-pipeline',
+      // EDIT: paste your real link here
+      githubUrl: '#',
+      // EDIT: paste your real link here
+      demoUrl: '#',
       featured: true,
       highlights: [
         'Integrated ViT visual embeddings with contextual representations',
@@ -277,9 +295,10 @@ export const portfolioData: PortfolioData = {
         'End-to-end computer vision safety system designed for construction and industrial surveillance. Encompasses custom bounding-box dataset annotation, data augmentation, YAML configuration, hyperparameter tuning, and real-time video stream inference.',
       image: '/assets/projects/helmet-detection.jpg',
       tags: ['YOLO', 'OpenCV', 'Object Detection', 'Python', 'Transfer Learning'],
-      // EDIT: Replace with your actual project GitHub URL
-      githubUrl: 'https://github.com/ilyasahmad/helmet-detection-yolo',
-      liveDemoUrl: 'https://github.com/ilyasahmad/helmet-detection-yolo',
+      // EDIT: paste your real link here
+      githubUrl: 'https://github.com/ilyassahmad54-maker/Helmet_Detection_Project',
+      // EDIT: paste your real link here
+      demoUrl: '#',
       featured: true,
       highlights: [
         'Trained on diverse real-world illumination and angle conditions',
@@ -297,9 +316,10 @@ export const portfolioData: PortfolioData = {
         'A healthcare decision support tool enabling patients and clinicians to calculate diabetes risk probabilities from clinical biomarker inputs. Features interactive probability sliders, risk stratification, and feature impact visualizations.',
       image: '/assets/projects/diabetes-care.jpg',
       tags: ['Logistic Regression', 'Streamlit', 'Scikit-learn', 'Healthcare AI', 'Python'],
-      // EDIT: Replace with your actual project GitHub URL
-      githubUrl: 'https://github.com/ilyasahmad/diabetes-care-ml',
-      liveDemoUrl: 'https://github.com/ilyasahmad/diabetes-care-ml',
+      // EDIT: paste your real link here
+      githubUrl: '#',
+      // EDIT: paste your real link here
+      demoUrl: '#',
       featured: true,
       highlights: [
         'Rigorous cross-validated model training with feature scaling',
@@ -317,9 +337,10 @@ export const portfolioData: PortfolioData = {
         'Unsupervised machine learning system using K-Means and Hierarchical Clustering to segment commercial customer portfolios based on spending habits, purchase frequency, and annual revenue contribution.',
       image: '/assets/projects/customer-segmentation.jpg',
       tags: ['K-Means Clustering', 'EDA', 'Unsupervised ML', 'Seaborn', 'Python'],
-      // EDIT: Replace with your actual project GitHub URL
-      githubUrl: 'https://github.com/ilyasahmad/customer-segmentation-eda',
-      liveDemoUrl: 'https://github.com/ilyasahmad/customer-segmentation-eda',
+      // EDIT: paste your real link here
+      githubUrl: '#',
+      // EDIT: paste your real link here
+      demoUrl: '#',
       featured: false,
       highlights: [
         'Determined optimal k-clusters utilizing the Elbow method & Silhouette scores',
@@ -337,9 +358,10 @@ export const portfolioData: PortfolioData = {
         'A comprehensive business intelligence dashboard tracking AI tool adoption rates, academic performance correlation, frequency of usage across majors, and perceived ethical implications within higher education.',
       image: '/assets/projects/student-ai-dashboard.jpg',
       tags: ['Tableau', 'Business Intelligence', 'Data Storytelling', 'Excel', 'Data Validation'],
-      // EDIT: Replace with your actual project GitHub URL
-      githubUrl: 'https://github.com/ilyasahmad/student-ai-usage-dashboard',
-      liveDemoUrl: 'https://github.com/ilyasahmad/student-ai-usage-dashboard',
+      // EDIT: paste your real link here
+      githubUrl: '#',
+      // EDIT: paste your real link here
+      demoUrl: '#',
       featured: false,
       highlights: [
         'Interactive filtering across academic departments and study levels',
@@ -357,9 +379,10 @@ export const portfolioData: PortfolioData = {
         'End-to-end cardiovascular risk prediction system evaluating clinical metrics like blood pressure, cholesterol, ECG anomalies, and maximum heart rate. Implements ensemble classifiers for maximum recall and diagnostic sensitivity.',
       image: '/assets/projects/heart-disease-prediction.jpg',
       tags: ['Classification', 'Scikit-learn', 'Feature Engineering', 'Streamlit', 'Python'],
-      // EDIT: Replace with your actual project GitHub URL
-      githubUrl: 'https://github.com/ilyasahmad/heart-disease-prediction',
-      liveDemoUrl: 'https://github.com/ilyasahmad/heart-disease-prediction',
+      // EDIT: paste your real link here
+      githubUrl: '#',
+      // EDIT: paste your real link here
+      demoUrl: '#',
       featured: false,
       highlights: [
         'Compared Random Forest, XGBoost, and Logistic Regression baselines',
@@ -436,4 +459,7 @@ export const portfolioData: PortfolioData = {
     { label: 'Education', href: '#education' },
     { label: 'Contact', href: '#contact' },
   ],
+
+  // EDIT: change your edit-mode passcode (default: ilyas2025)
+  adminPasscode: 'ilyas2025',
 };

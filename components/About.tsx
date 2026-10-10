@@ -12,7 +12,7 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import SectionHeading from './SectionHeading';
 
 function AnimatedCounter({
@@ -58,7 +58,8 @@ function AnimatedCounter({
 }
 
 export default function About() {
-  const { profile, stats } = portfolioData;
+  const { data } = usePortfolio();
+  const { profile, stats } = data;
 
   const keyHighlights = [
     {

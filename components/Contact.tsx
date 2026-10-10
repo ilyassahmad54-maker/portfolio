@@ -12,24 +12,27 @@ import {
   Check,
   Copy,
   AlertCircle,
-  Sparkles,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import SectionHeading from './SectionHeading';
 
 export default function Contact() {
-  const { profile, socialLinks } = portfolioData;
+  const { data } = usePortfolio();
+  const { profile, socialLinks } = data;
 
   const [formState, setFormState] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
+    _gotcha: '', // Formspree honeypot field for spam prevention
   });
 
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [copiedEmail, setCopiedEmail] = useState(false);
+
+  const mailtoLink = `mailto:${profile.email}?subject=Portfolio%20Contact`;
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText(profile.email);
@@ -51,18 +54,6 @@ export default function Contact() {
     setStatus('submitting');
     setErrorMessage('');
 
-    // Check if endpoint is placeholder
-    const isPlaceholder = profile.formspreeEndpoint.includes('YOUR_FORMSPREE_ID');
-
-    if (isPlaceholder) {
-      // Simulate successful sending with a helpful demo notification
-      setTimeout(() => {
-        setStatus('success');
-        setFormState({ name: '', email: '', subject: '', message: '' });
-      }, 1000);
-      return;
-    }
-
     try {
       const response = await fetch(profile.formspreeEndpoint, {
         method: 'POST',
@@ -75,18 +66,26 @@ export default function Contact() {
 
       if (response.ok) {
         setStatus('success');
-        setFormState({ name: '', email: '', subject: '', message: '' });
+        setFormState({
+          name: '',
+          email: '',
+          subject: '',
+          message: '',
+          _gotcha: '',
+        });
       } else {
-        const data = await response.json().catch(() => null);
+        const responseData = await response.json().catch(() => null);
         setStatus('error');
-        setErrorMessage(
-          data?.error || 'Failed to deliver message. Please reach out directly via email.'
-        );
+        const apiError =
+          responseData?.errors?.map((err: any) => err.message).join(', ') ||
+          responseData?.error ||
+          'Failed to send message. Please email me directly.';
+        setErrorMessage(apiError);
       }
     } catch (err) {
       setStatus('error');
       setErrorMessage(
-        'Network error encountered. Please email directly at ' + profile.email
+        'Network error encountered. Please email me directly at ' + profile.email
       );
     }
   };
@@ -117,15 +116,20 @@ export default function Contact() {
             <div className="glass-card rounded-2xl p-6 relative overflow-hidden group">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3.5">
-                  <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+                  {/* FIX 2: Mail icon triggers pre-filled mail client */}
+                  <a
+                    href={mailtoLink}
+                    aria-label="Send email via mail client"
+                    className="p-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 transition-all hover:scale-105"
+                  >
                     <Mail className="w-5 h-5" />
-                  </div>
+                  </a>
                   <div>
                     <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                       Email Address
                     </p>
                     <a
-                      href={`mailto:${profile.email}`}
+                      href={mailtoLink}
                       className="text-sm sm:text-base font-bold text-slate-900 dark:text-white hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
                     >
                       {profile.email}
@@ -238,29 +242,42 @@ export default function Contact() {
                 Fill out the form below and I will respond to your inquiry within 24 hours.
               </p>
 
+              {/* Success Feedback Banner */}
               {status === 'success' && (
                 <div className="mb-6 p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex items-start gap-3">
                   <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-sm">Message Sent Successfully!</p>
+                    <p className="font-bold text-sm">Message sent! I&apos;ll get back to you soon.</p>
                     <p className="text-xs mt-0.5">
-                      Thank you for reaching out. I will review your note and get back to you shortly.
+                      Your note has been securely forwarded to my inbox.
                     </p>
                   </div>
                 </div>
               )}
 
+              {/* Error Feedback Banner */}
               {status === 'error' && (
                 <div className="mb-6 p-4 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-800 dark:text-rose-300 flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-bold text-sm">Failed to Send</p>
+                    <p className="font-bold text-sm">Submission Error</p>
                     <p className="text-xs mt-0.5">{errorMessage}</p>
                   </div>
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Formspree hidden honeypot field */}
+                <input
+                  type="text"
+                  name="_gotcha"
+                  value={formState._gotcha}
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label

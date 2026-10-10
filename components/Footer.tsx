@@ -3,10 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { Heart, Github, Linkedin, Mail, ArrowUp } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 
 export default function Footer() {
-  const { profile, socialLinks, navItems } = portfolioData;
+  const { data, openEditMode } = usePortfolio();
+  const { profile, socialLinks, navItems } = data;
 
   const currentYear = new Date().getFullYear();
 
@@ -79,15 +80,19 @@ export default function Footer() {
             <div className="flex items-center gap-2.5">
               {socialLinks.map((s, idx) => {
                 let Icon = Mail;
+                let href = s.url;
                 if (s.platform === 'github') Icon = Github;
                 if (s.platform === 'linkedin') Icon = Linkedin;
+                if (s.platform === 'email') {
+                  href = `mailto:${profile.email}?subject=Portfolio%20Contact`;
+                }
 
                 return (
                   <a
                     key={idx}
-                    href={s.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={href}
+                    target={s.platform === 'email' ? undefined : '_blank'}
+                    rel={s.platform === 'email' ? undefined : 'noopener noreferrer'}
                     aria-label={s.label}
                     className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-cyan-500/10 text-slate-700 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 border border-slate-200 dark:border-slate-700/60 transition-colors"
                   >
@@ -105,9 +110,19 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-slate-200/60 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600 dark:text-slate-300">
           <p>© {currentYear} {profile.name}. All rights reserved.</p>
-          <p className="flex items-center gap-1">
-            Built with Next.js 14, Tailwind CSS & Framer Motion
-          </p>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openEditMode}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700/80 transition-colors hover:border-cyan-500/50"
+              title="Open Admin Edit Mode (Ctrl+Shift+E)"
+            >
+              <span>✏️</span>
+              <span>Edit</span>
+            </button>
+            <p className="flex items-center gap-1">
+              Built with Next.js 14, Tailwind CSS & Framer Motion
+            </p>
+          </div>
         </div>
       </div>
     </footer>

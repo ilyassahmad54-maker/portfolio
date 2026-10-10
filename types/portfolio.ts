@@ -46,6 +46,7 @@ export interface ProjectItem {
   image: string;
   tags: string[];
   githubUrl: string;
+  demoUrl: string;
   liveDemoUrl?: string;
   featured: boolean;
   highlights: string[];
@@ -100,4 +101,5 @@ export interface PortfolioData {
   education: EducationItem[];
   certifications: CertificationItem[];
   navItems: NavItem[];
+  adminPasscode: string;
 }

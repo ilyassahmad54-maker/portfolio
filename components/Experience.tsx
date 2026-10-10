@@ -9,11 +9,12 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import SectionHeading from './SectionHeading';
 
 export default function Experience() {
-  const { experience } = portfolioData;
+  const { data } = usePortfolio();
+  const { experience } = data;
 
   return (
     <section id="experience" className="py-20 md:py-28 relative">

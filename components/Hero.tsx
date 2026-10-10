@@ -16,17 +16,18 @@ import {
   Eye,
   Database,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 
 export default function Hero() {
-  const { profile, socialLinks } = portfolioData;
+  const { data } = usePortfolio();
+  const { profile, socialLinks } = data;
 
   // Build typing sequence for react-type-animation
   const typingSequence = profile.roles.flatMap((role) => [role, 1800]);
 
   const githubLink = socialLinks.find((s) => s.platform === 'github');
   const linkedinLink = socialLinks.find((s) => s.platform === 'linkedin');
-  const emailLink = socialLinks.find((s) => s.platform === 'email');
+  const emailMailto = `mailto:${profile.email}?subject=Portfolio%20Contact`;
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -195,15 +196,13 @@ export default function Hero() {
                     <Linkedin className="w-4 h-4" />
                   </a>
                 )}
-                {emailLink && (
-                  <a
-                    href={emailLink.url}
-                    aria-label="Send email"
-                    className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-cyan-500 transition-colors"
-                  >
-                    <Mail className="w-4 h-4" />
-                  </a>
-                )}
+                <a
+                  href={emailMailto}
+                  aria-label="Send email"
+                  className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 hover:text-cyan-500 transition-colors"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
               </div>
             </div>
           </motion.div>
@@ -227,6 +226,7 @@ export default function Hero() {
                     alt={profile.name}
                     fill
                     priority
+                    unoptimized={profile.profileImage.startsWith('data:')}
                     sizes="(max-width: 768px) 320px, 400px"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />

@@ -9,6 +9,10 @@ import Education from '@/components/Education';
 import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import ScrollToTop from '@/components/ScrollToTop';
+import AdminLockModal from '@/components/AdminLockModal';
+import EditDrawer from '@/components/EditDrawer';
+import Toast from '@/components/Toast';
+import LocalChangesBadge from '@/components/LocalChangesBadge';
 
 export default function Home() {
   return (
@@ -25,6 +29,10 @@ export default function Home() {
       </main>
       <Footer />
       <ScrollToTop />
+      <LocalChangesBadge />
+      <AdminLockModal />
+      <EditDrawer />
+      <Toast />
     </div>
   );
 }

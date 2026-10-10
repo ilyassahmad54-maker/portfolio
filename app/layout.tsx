@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { PortfolioProvider } from '@/components/PortfolioContext';
 import { portfolioData } from '@/data/portfolio';
 
 const inter = Inter({
@@ -97,7 +98,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} font-sans antialiased min-h-screen selection:bg-cyan-500/20 selection:text-cyan-400`}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          <PortfolioProvider>{children}</PortfolioProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

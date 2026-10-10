@@ -11,7 +11,7 @@ import {
   Sparkles,
   Cpu,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import SectionHeading from './SectionHeading';
 
 const categoryIcons: Record<string, React.ElementType> = {
@@ -22,7 +22,8 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 export default function Skills() {
-  const { skills } = portfolioData;
+  const { data } = usePortfolio();
+  const { skills } = data;
 
   return (
     <section id="skills" className="py-20 md:py-28 relative">

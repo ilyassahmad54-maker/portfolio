@@ -4,10 +4,12 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, FileDown, Sparkles } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
+  const { data } = usePortfolio();
+  const { profile, navItems } = data;
   const [isOpen, setIsOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string>('');
   const [scrolled, setScrolled] = useState(false);
@@ -18,7 +20,7 @@ export default function Navbar() {
       setScrolled(window.scrollY > 20);
 
       // Scroll spy for active section
-      const sections = portfolioData.navItems.map((item) =>
+      const sections = navItems.map((item) =>
         item.href.replace('#', '')
       );
       
@@ -80,7 +82,7 @@ export default function Navbar() {
               IA
             </span>
             <span className="hidden sm:inline font-bold">
-              {portfolioData.profile.name}
+              {profile.name}
             </span>
             <span className="sm:hidden font-bold">Ilyas</span>
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
@@ -88,7 +90,7 @@ export default function Navbar() {
 
           {/* Desktop Navigation Links */}
           <nav className="hidden md:flex items-center gap-1 lg:gap-2">
-            {portfolioData.navItems.map((item) => {
+            {navItems.map((item) => {
               const isActive = activeSection === item.href.replace('#', '');
               return (
                 <a
@@ -120,7 +122,7 @@ export default function Navbar() {
 
             {/* Resume Download Button */}
             <a
-              href={portfolioData.profile.cvUrl}
+              href={profile.cvUrl}
               download="Ilyas_Ahmad_CV.pdf"
               target="_blank"
               rel="noopener noreferrer"
@@ -153,7 +155,7 @@ export default function Navbar() {
             className="md:hidden glass-card border-b border-t border-slate-200/80 dark:border-slate-800/80 mt-3 px-4 py-5 shadow-xl overflow-hidden"
           >
             <div className="flex flex-col gap-2">
-              {portfolioData.navItems.map((item) => {
+              {navItems.map((item) => {
                 const isActive = activeSection === item.href.replace('#', '');
                 return (
                   <a
@@ -173,7 +175,7 @@ export default function Navbar() {
 
               <div className="pt-3 mt-2 border-t border-slate-200/60 dark:border-slate-800/60">
                 <a
-                  href={portfolioData.profile.cvUrl}
+                  href={profile.cvUrl}
                   download="Ilyas_Ahmad_CV.pdf"
                   target="_blank"
                   rel="noopener noreferrer"

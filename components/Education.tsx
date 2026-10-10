@@ -12,11 +12,12 @@ import {
   CheckCircle,
   BadgeCheck,
 } from 'lucide-react';
-import { portfolioData } from '@/data/portfolio';
+import { usePortfolio } from './PortfolioContext';
 import SectionHeading from './SectionHeading';
 
 export default function Education() {
-  const { education, certifications } = portfolioData;
+  const { data } = usePortfolio();
+  const { education, certifications } = data;
 
   return (
     <section id="education" className="py-20 md:py-28 relative">
