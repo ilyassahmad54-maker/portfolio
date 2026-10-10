@@ -10,7 +10,7 @@ A modern, high-performance personal portfolio website built with **Next.js 14 (A
 
 - **⚡ Next.js 14 App Router**: Server-side rendering, instant static generation, and automatic image optimization (`next/image`).
 - **🌓 Dual Theme Support**: Seamless Light & Dark mode with animated Sun/Moon toggle. Dark mode features a deep navy/slate aesthetic (`#0B1120`) with cyan-to-violet gradients; light mode is clean, modern, and recruiter-friendly. The selected theme persists in `localStorage`.
-- **🔐 Password-Protected Edit Mode**: Built-in visual editor protected by a SHA-256 cryptographic login gate (`ilyas2025`). Casual visitors cannot access the editor. Includes instant photo uploading, content editing, local autosave, export/import JSON, and session locking.
+- **🔐 Server-authenticated Edit Mode**: Server-validated sessions protect entry to the browser-local editor.
 - **✨ Fluid Animations**: Smooth section reveals on scroll, interactive card hover lifts, floating badges, ambient gradient blobs, and typed role headlines powered by `framer-motion` and `react-type-animation`.
 - **📱 Mobile-First & Responsive**: Includes sticky frosted-glass navbar, smooth-scroll spy with active section highlighting, mobile drawer menu, and a floating scroll-to-top button.
 - **🎯 100% Data-Driven Architecture**: All portfolio text, experience, projects, skills, and links are centralized in a single file (`/data/portfolio.ts`). Components contain zero hardcoded strings.
@@ -20,30 +20,25 @@ A modern, high-performance personal portfolio website built with **Next.js 14 (A
 
 ---
 
-## 🔐 Admin Access & Password Protection
+## Admin authentication and Vercel configuration
 
-To prevent casual visitors from tampering with your site, Edit Mode is secured behind an admin passcode gate.
+Editing creates browser-local drafts only. It does not publish content or write to a shared database. A browser owner can always modify their own localStorage; server authentication cannot prevent that. Publishing still requires a repository update and deployment. There are no content-write admin APIs.
 
-### Default Passcode
-- **Passcode**: `ilyas2025`
+In Vercel → Project → Settings → Environment Variables, configure these server-only variables for Production (and Preview only if you want preview editing):
 
-### How It Works
-1. **Triggering Edit Mode**: Click the **"✏️ Edit"** button in the footer or press `Ctrl+Shift+E` (or `Cmd+Shift+E` on Mac).
-2. **Lock Screen Gate**: A dark overlay appears requesting your passcode.
-   - If incorrect: An animated shake warning notifies you that access was denied.
-   - If correct: The editor opens and stores a temporary session flag (`editUnlocked: "true"`) in `sessionStorage`.
-3. **Session Behavior**:
-   - As long as the browser tab remains open, you can open and close the editor freely without retyping your passcode.
-   - When you close the browser tab, `sessionStorage` clears automatically.
-4. **🔒 Lock Button**: Inside the editor header, clicking **"Lock"** immediately clears the session flag and closes the editor. The next person must enter the passcode again.
-5. **No Client-Side Backdoors**: The editor panel programmatically verifies `isEditUnlocked()` before rendering any edit controls. If someone dismisses the lock overlay using browser dev tools, the editor refuses to render.
-6. **Changing Your Passcode**:
-   Open `data/portfolio.ts` and change the `adminPasscode` field:
-   ```typescript
-   // EDIT: change your edit-mode passcode
-   adminPasscode: 'your_new_secret_passcode',
-   ```
-   *Note: Passcode verification uses client-side SHA-256 via the Web Crypto API (`window.crypto.subtle.digest`). It protects against casual visitors and accidental changes. Never store confidential passwords or API secrets in frontend files.*
+- `ADMIN_PASSCODE`: a new unique random passcode of at least 20 characters. Treat the previously published password as compromised; never reuse it.
+- `UPSTASH_REDIS_REST_URL`: the HTTPS REST URL from a dedicated Upstash Redis database.
+- `UPSTASH_REDIS_REST_TOKEN`: its write-capable REST token. The database stores expiring sessions and login counters.
+
+Never prefix these with `NEXT_PUBLIC_`, put them in portfolio data, or commit them. For local development use an ignored `.env.local`. Missing configuration or Redis failures disable login. Configure the variables before an approved deployment; environment changes require redeployment.
+
+Login uses a same-origin POST, server-side constant-time credential comparison, and a random opaque session. Production cookies use Secure, HttpOnly, SameSite=Strict and the __Host- prefix. Sessions expire after one hour, are revoked on logout, and become invalid when the passcode rotates. Redis enforces five login requests per 15 minutes per Vercel client IP across function instances. All attempts count, including successful ones. Unknown client addresses share one bucket. Consider an additional Vercel Firewall login rule for abuse protection.
+
+The session API validates the stored session on every request. The editor checks it before opening and before app-managed saves/reset. UI checks are not authorization: any future shared content-write API must validate the session server-side before writing. Never rely on a React flag. Cross-origin login/logout requests are rejected; authentication responses are not cached. Logout requires the session store to succeed and reports failures for retry.
+
+Validation: run `node --test tests/admin-auth.cjs`, `npm run lint`, `npx tsc --noEmit --incremental false`, and `npm run build`. Authentication tests use a mocked Redis REST service; verify login, expiration, rate limiting and logout against the configured Upstash database in a preview before production rollout. The production-readiness review upgrades Next.js to 15.5.27 (retaining React 18), eslint-config-next to 15.5.27, ESLint to 9, and PostCSS to 8.5.29. Overrides use the patched PostCSS version inside Next.js and postcss-selector-parser 7.1.6 for Tailwind. The audit reports zero production-dependency vulnerabilities and seven high-severity development/build dependency findings, all stemming from unpatched braces <=3.0.3. No patched braces version is published. Avoid processing untrusted glob patterns in build tooling; eliminating this chain requires a separately validated styling/toolchain migration. Next.js 15 still supports the existing next lint command, but deprecates it.
+
+The old password remains in Git history and previous deployments until separately removed; it is no longer accepted. Do not reuse it elsewhere. No history rewrite or deployment is performed by this change.
 
 ---
 
@@ -53,7 +48,7 @@ The site includes a comprehensive live browser editing panel so you can update c
 
 ### 1. Opening the Editor
 - Click the **"✏️ Edit"** button in the footer or press `Ctrl+Shift+E`.
-- Enter your passcode (`ilyas2025`) and click **"Unlock Edit Mode"**.
+- Enter your configured admin passcode and click **"Unlock Edit Mode"**.
 
 ### 2. What You Can Edit
 - **Profile Photo**: Click **"Choose New Photo"** to upload any JPG, PNG, or WebP image. The image is instantly converted to base64, previewed, and saved. If the image is over 500KB, a helpful compression reminder appears. Click **"Reset to Default"** at any time to restore the original photo.
@@ -134,7 +129,7 @@ portfolio/
 │   └── page.tsx                 # Main single-page portfolio layout
 ├── components/
 │   ├── About.tsx                # Bio, key highlights, and animated counter stats
-│   ├── AdminLockModal.tsx       # SHA-256 password lock screen gate
+│   ├── AdminLockModal.tsx       # Server login dialog
 │   ├── Contact.tsx              # Formspree contact form & mailto mail client triggers
 │   ├── EditDrawer.tsx           # Full-featured live browser editing panel
 │   ├── Education.tsx            # Degree at UET Peshawar & professional certifications
@@ -143,7 +138,7 @@ portfolio/
 │   ├── Hero.tsx                 # Typed role animation, CTA buttons, profile photo
 │   ├── LocalChangesBadge.tsx    # Floating indicator showing active local edits
 │   ├── Navbar.tsx               # Frosted glass nav, active scroll spy, mobile menu
-│   ├── PortfolioContext.tsx     # Central state, localStorage persistence & session lock
+│   ├── PortfolioContext.tsx     # Central state, localStorage persistence & server session validation
 │   ├── Projects.tsx             # Filterable project cards with demo/code links & toasts
 │   ├── ScrollToTop.tsx          # Floating button with smooth scroll
 │   ├── SectionHeading.tsx       # Reusable section title with badge & animated bar
@@ -151,7 +146,7 @@ portfolio/
 │   ├── ThemeToggle.tsx          # Animated Sun / Moon toggle button
 │   └── Toast.tsx                # Notification toast for links and editor actions
 ├── data/
-│   └── portfolio.ts             # ⭐ SINGLE SOURCE OF TRUTH (All base content & passcode)
+│   └── portfolio.ts             # ⭐ SINGLE SOURCE OF TRUTH (All base content)
 ├── public/
 │   ├── cv.pdf                   # Downloadable resume
 │   └── assets/

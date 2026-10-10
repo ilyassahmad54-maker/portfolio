@@ -101,5 +101,4 @@ export interface PortfolioData {
   education: EducationItem[];
   certifications: CertificationItem[];
   navItems: NavItem[];
-  adminPasscode: string;
 }

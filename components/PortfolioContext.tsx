@@ -5,32 +5,11 @@ import { PortfolioData, Profile, ProjectItem, SkillCategory, ExperienceItem, Edu
 import { portfolioData as initialPortfolioData } from '@/data/portfolio';
 
 const LOCAL_STORAGE_KEY = 'portfolio_custom_data';
-const SESSION_STORAGE_LOCK_KEY = 'editUnlocked';
-
-/**
- * Helper to check if edit mode has been unlocked for the current browser session.
- * Checks sessionStorage so the lock automatically re-engages whenever the browser is closed.
- */
-export function isEditUnlocked(): boolean {
-  if (typeof window === 'undefined') return false;
+async function authorized(): Promise<boolean> {
   try {
-    return window.sessionStorage.getItem(SESSION_STORAGE_LOCK_KEY) === 'true';
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Computes a SHA-256 hash string using the Web Crypto API.
- */
-export async function computeSHA256(message: string): Promise<string> {
-  if (typeof window === 'undefined' || !window.crypto || !window.crypto.subtle) {
-    return message;
-  }
-  const msgUint8 = new TextEncoder().encode(message);
-  const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgUint8);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    const response = await fetch('/api/admin/session', { cache: 'no-store' });
+    return response.ok;
+  } catch { return false; }
 }
 
 interface PortfolioContextType {
@@ -68,6 +47,8 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
+        delete parsed.adminPasscode;
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
         // Deep-merge with initialPortfolioData so missing keys don't crash
         setData({
           ...initialPortfolioData,
@@ -85,7 +66,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       console.warn('Could not load custom portfolio data from localStorage:', err);
     }
 
-    setIsUnlocked(isEditUnlocked());
+    void authorized().then(setIsUnlocked);
   }, []);
 
   const showToast = useCallback((msg: string) => {
@@ -93,7 +74,8 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Autosave and update data state
-  const saveData = useCallback((newData: PortfolioData) => {
+  const saveData = useCallback(async (newData: PortfolioData) => {
+    if (!(await authorized())) { setIsUnlocked(false); setIsEditOpen(false); return; }
     setData(newData);
     setIsCustomized(true);
     try {
@@ -103,8 +85,9 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Reset to initial file defaults (does NOT clear passcode)
-  const resetToDefault = useCallback(() => {
+  // Reset browser-local drafts to initial file defaults
+  const resetToDefault = useCallback(async () => {
+    if (!(await authorized())) { setIsUnlocked(false); setIsEditOpen(false); return; }
     try {
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch (err) {
@@ -115,52 +98,32 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     showToast('Reset all data to default codebase settings.');
   }, [showToast]);
 
-  // Unlock with SHA-256 hashed comparison
-  const unlockWithPasscode = useCallback(
-    async (passcode: string): Promise<boolean> => {
-      try {
-        const inputHash = await computeSHA256(passcode.trim());
-        const targetHash = await computeSHA256(data.adminPasscode.trim());
+  const unlockWithPasscode = useCallback(async (passcode: string): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/admin/login', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passcode }),
+      });
+      if (!response.ok) return false;
+      setIsUnlocked(true); setIsLockOpen(false); setIsEditOpen(true);
+      return true;
+    } catch { return false; }
+  }, []);
 
-        if (inputHash === targetHash) {
-          if (typeof window !== 'undefined') {
-            window.sessionStorage.setItem(SESSION_STORAGE_LOCK_KEY, 'true');
-          }
-          setIsUnlocked(true);
-          setIsLockOpen(false);
-          setIsEditOpen(true);
-          return true;
-        }
-      } catch (err) {
-        console.error('Passcode verification error:', err);
-      }
-      return false;
-    },
-    [data.adminPasscode]
-  );
-
-  // Lock session and close edit panel
-  const lockSession = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        window.sessionStorage.removeItem(SESSION_STORAGE_LOCK_KEY);
-      } catch {}
-    }
-    setIsUnlocked(false);
-    setIsEditOpen(false);
-    setIsLockOpen(false);
-    showToast('Edit mode locked.');
+  const lockSession = useCallback(async () => {
+    try {
+      const response = await fetch('/api/admin/logout', { method: 'POST' });
+      if (!response.ok) throw new Error('Logout failed');
+      setIsUnlocked(false); setIsEditOpen(false); setIsLockOpen(false);
+      showToast('Logged out.');
+    } catch { showToast('Logout failed. Please try again.'); }
   }, [showToast]);
 
-  // Open Edit Mode (checks gate)
-  const openEditMode = useCallback(() => {
-    if (isEditUnlocked()) {
-      setIsUnlocked(true);
-      setIsEditOpen(true);
-    } else {
-      setIsUnlocked(false);
-      setIsLockOpen(true);
-    }
+  const openEditMode = useCallback(async () => {
+    const valid = await authorized();
+    setIsUnlocked(valid);
+    setIsEditOpen(valid);
+    setIsLockOpen(!valid);
   }, []);
 
   // Export data as data.json
@@ -187,6 +150,7 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
     (jsonString: string): boolean => {
       try {
         const parsed = JSON.parse(jsonString);
+        delete parsed.adminPasscode;
         if (!parsed.profile || !parsed.projects) {
           showToast('Invalid data.json schema.');
           return false;

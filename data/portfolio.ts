@@ -571,6 +571,5 @@ export const portfolioData: PortfolioData = {
       "label": "Contact",
       "href": "#contact"
     }
-  ],
-  "adminPasscode": "ilyas2025"
+  ]
 };

@@ -40,7 +40,7 @@ export default function AdminLockModal() {
 
     if (!success) {
       setError(true);
-      setErrorMessage('Incorrect passcode. Access denied.');
+      setErrorMessage('Unable to sign in. Check your passcode or try again later.');
       setPasscode('');
       inputRef.current?.focus();
     }
@@ -120,7 +120,7 @@ export default function AdminLockModal() {
                       setPasscode(e.target.value);
                       if (error) setError(false);
                     }}
-                    placeholder="Enter passcode (default: ilyas2025)"
+                    placeholder="Enter admin passcode"
                     className="w-full pl-10 pr-12 py-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                     autoComplete="current-password"
                   />
@@ -164,7 +164,7 @@ export default function AdminLockModal() {
               </div>
 
               <p className="text-[11px] text-center text-slate-400 dark:text-slate-500 pt-1">
-                Passcode verified securely via client-side SHA-256 Web Crypto.
+                Your session is verified by the server.
               </p>
             </form>
           </motion.div>

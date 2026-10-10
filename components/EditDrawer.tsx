@@ -21,7 +21,7 @@ import {
   Image as ImageIcon,
   ExternalLink,
 } from 'lucide-react';
-import { usePortfolio, isEditUnlocked } from './PortfolioContext';
+import { usePortfolio } from './PortfolioContext';
 import { portfolioData as initialPortfolioData } from '@/data/portfolio';
 import { ProjectItem, SkillItem, ExperienceItem, EducationItem, CertificationItem } from '@/types/portfolio';
 
@@ -30,6 +30,7 @@ const MAX_IMAGE_SIZE_BYTES = 500 * 1024; // 500KB warning threshold
 export default function EditDrawer() {
   const {
     data,
+    isUnlocked,
     saveData,
     resetToDefault,
     exportData,
@@ -49,12 +50,8 @@ export default function EditDrawer() {
   const importFileRef = useRef<HTMLInputElement>(null);
   const profileFileInputRef = useRef<HTMLInputElement>(null);
 
-  /**
-   * SECURITY ENFORCEMENT:
-   * Refuse to render the edit panel if the browser session is not unlocked.
-   * This ensures dev tools cannot bypass the lock screen.
-   */
-  if (!isEditUnlocked() || !isEditOpen) {
+  // Visibility is a convenience; server endpoints validate sessions independently.
+  if (!isUnlocked || !isEditOpen) {
     return null;
   }
 
@@ -193,10 +190,10 @@ export default function EditDrawer() {
             <button
               onClick={lockSession}
               className="p-2 rounded-xl bg-slate-200/80 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors flex items-center gap-1.5 text-xs font-semibold"
-              title="Lock edit mode and clear session"
+              title="Log out and revoke session"
             >
               <Lock className="w-3.5 h-3.5 text-amber-500" />
-              <span className="hidden sm:inline">Lock</span>
+              <span className="hidden sm:inline">Logout</span>
             </button>
 
             {/* Close Button */}
