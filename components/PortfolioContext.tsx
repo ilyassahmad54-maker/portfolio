@@ -5,6 +5,11 @@ import { PortfolioData, Profile, ProjectItem, SkillCategory, ExperienceItem, Edu
 import { portfolioData as initialPortfolioData } from '@/data/portfolio';
 
 const LOCAL_STORAGE_KEY = 'portfolio_custom_data';
+function backupDraft() {
+  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
+  if (stored) localStorage.setItem(`${LOCAL_STORAGE_KEY}_backup_${Date.now()}`, stored);
+}
+
 async function authorized(): Promise<boolean> {
   try {
     const response = await fetch('/api/admin/session', { cache: 'no-store' });
@@ -41,14 +46,13 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Initialize from storage on mount
-  useEffect(() => {
+  // Stored drafts are previewed only by an authenticated admin. Never rewrite on load.
+  const loadDraft = useCallback(() => {
     try {
       const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         delete parsed.adminPasscode;
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(parsed));
         // Deep-merge with initialPortfolioData so missing keys don't crash
         setData({
           ...initialPortfolioData,
@@ -66,8 +70,14 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
       console.warn('Could not load custom portfolio data from localStorage:', err);
     }
 
-    void authorized().then(setIsUnlocked);
   }, []);
+
+  useEffect(() => {
+    void authorized().then(valid => {
+      setIsUnlocked(valid);
+      if (valid) loadDraft();
+    });
+  }, [loadDraft]);
 
   const showToast = useCallback((msg: string) => {
     setToastMessage(msg);
@@ -76,22 +86,25 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
   // Autosave and update data state
   const saveData = useCallback(async (newData: PortfolioData) => {
     if (!(await authorized())) { setIsUnlocked(false); setIsEditOpen(false); return; }
-    setData(newData);
-    setIsCustomized(true);
     try {
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
+      setData(newData);
+      setIsCustomized(true);
     } catch (err) {
       console.error('Failed to save portfolio data to localStorage:', err);
+      showToast('Draft could not be saved. Browser storage may be full.');
     }
-  }, []);
+  }, [showToast]);
 
   // Reset browser-local drafts to initial file defaults
   const resetToDefault = useCallback(async () => {
     if (!(await authorized())) { setIsUnlocked(false); setIsEditOpen(false); return; }
     try {
+      backupDraft();
       localStorage.removeItem(LOCAL_STORAGE_KEY);
     } catch (err) {
-      console.error('Failed to remove custom data from localStorage:', err);
+      showToast('Reset cancelled: could not back up your draft.');
+      return;
     }
     setData(initialPortfolioData);
     setIsCustomized(false);
@@ -105,26 +118,29 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
         body: JSON.stringify({ passcode }),
       });
       if (!response.ok) return false;
+      loadDraft();
       setIsUnlocked(true); setIsLockOpen(false); setIsEditOpen(true);
       return true;
     } catch { return false; }
-  }, []);
+  }, [loadDraft]);
 
   const lockSession = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/logout', { method: 'POST' });
       if (!response.ok) throw new Error('Logout failed');
       setIsUnlocked(false); setIsEditOpen(false); setIsLockOpen(false);
-      showToast('Logged out.');
+      setData(initialPortfolioData); setIsCustomized(false);
+      showToast('Logged out. Draft preserved; showing published content.');
     } catch { showToast('Logout failed. Please try again.'); }
   }, [showToast]);
 
   const openEditMode = useCallback(async () => {
     const valid = await authorized();
+    if (valid) loadDraft();
     setIsUnlocked(valid);
     setIsEditOpen(valid);
     setIsLockOpen(!valid);
-  }, []);
+  }, [loadDraft]);
 
   // Export data as data.json
   const exportData = useCallback(() => {
@@ -165,6 +181,10 @@ export function PortfolioProvider({ children }: { children: React.ReactNode }) {
           education: parsed.education || initialPortfolioData.education,
           certifications: parsed.certifications || initialPortfolioData.certifications,
         };
+        try { backupDraft(); } catch {
+          showToast('Import cancelled: could not back up your draft.');
+          return false;
+        }
         saveData(merged);
         showToast('Imported data successfully!');
         return true;

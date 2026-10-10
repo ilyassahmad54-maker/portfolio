@@ -258,6 +258,10 @@ export default function EditDrawer() {
           </button>
         </div>
 
+        <p className="px-4 py-2 text-xs text-amber-700 dark:text-amber-300">
+          Edits are saved only in this browser. Export JSON to back up your draft and prepare it for publication through GitHub and Vercel.
+        </p>
+
         {/* Tab Navigation */}
         <div className="flex border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900 overflow-x-auto scrollbar-none">
           {[

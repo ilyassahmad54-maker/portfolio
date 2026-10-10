@@ -13,7 +13,7 @@ A modern, high-performance personal portfolio website built with **Next.js 14 (A
 - **🔐 Server-authenticated Edit Mode**: Server-validated sessions protect entry to the browser-local editor.
 - **✨ Fluid Animations**: Smooth section reveals on scroll, interactive card hover lifts, floating badges, ambient gradient blobs, and typed role headlines powered by `framer-motion` and `react-type-animation`.
 - **📱 Mobile-First & Responsive**: Includes sticky frosted-glass navbar, smooth-scroll spy with active section highlighting, mobile drawer menu, and a floating scroll-to-top button.
-- **🎯 100% Data-Driven Architecture**: All portfolio text, experience, projects, skills, and links are centralized in a single file (`/data/portfolio.ts`). Components contain zero hardcoded strings.
+- **🎯 100% Data-Driven Architecture**: All portfolio text, experience, projects, skills, and links are centralized in a single file (`/data.json`, imported by `/data/portfolio.ts`). Components contain zero hardcoded strings.
 - **📬 Live Formspree Contact Form**: Real form submissions connected directly to `https://formspree.io/f/mdeazelj` with spam honeypot protection (`_gotcha`), direct inbox delivery, and genuine API error/success feedback.
 - **✉️ Direct Mail Client Integration**: Clicking the email icon in the Contact section, Hero, or Footer automatically triggers `mailto:ilyassahmad54@gmail.com?subject=Portfolio%20Contact` in the visitor's mail application.
 - **🔔 Interactive Project Links & Toasts**: Source Code and Demo buttons are fully visible on every project card. Unfinished projects configured with `#` gracefully display an animated toast: *"Link coming soon — I'm still uploading this project."*
@@ -22,7 +22,7 @@ A modern, high-performance personal portfolio website built with **Next.js 14 (A
 
 ## Admin authentication and Vercel configuration
 
-Editing creates browser-local drafts only. It does not publish content or write to a shared database. A browser owner can always modify their own localStorage; server authentication cannot prevent that. Publishing still requires a repository update and deployment. There are no content-write admin APIs.
+Editing creates browser-local drafts only. Drafts are previewed only after a successful admin session check; logout shows published content and leaves the saved draft intact. Import and reset create timestamped localStorage backups and abort if backup fails. It does not publish content or write to a shared database. A browser owner can always modify their own localStorage; server authentication cannot prevent that. Publishing still requires a repository update and deployment. There are no content-write admin APIs.
 
 In Vercel → Project → Settings → Environment Variables, configure these server-only variables for Production (and Preview only if you want preview editing):
 
@@ -60,20 +60,21 @@ The site includes a comprehensive live browser editing panel so you can update c
 
 ### 3. Autosave & Local Changes Badge
 - Every change is **automatically saved to `localStorage`** and re-renders the site in real time.
-- When viewing custom local edits, an **"Editing (local changes)"** badge appears in the bottom-left corner with quick access to the editor or a one-click reset button.
+- When viewing custom local edits, an **"Unpublished local draft"** badge appears in the bottom-left corner with quick access to the editor or a one-click reset button.
 
 ### 4. Making Edits Permanent for All Visitors
 Because browser edits are saved in your personal browser's `localStorage`, follow these 3 quick steps to publish them permanently to all visitors on Vercel:
 
 1. In the editor action bar, click **"📥 Export JSON"** to download `data.json`.
-2. Copy the exported JSON or update the corresponding fields in `data/portfolio.ts` in your local project.
-3. Commit and push to GitHub:
+2. Run `node scripts/prepare-portfolio.cjs /absolute/path/to/exported/data.json`. This preserves all existing project IDs, backs up the source files under `/tmp/portfolio-content-backup-*`, extracts embedded images into content-hashed files under `public/assets`, and updates `data.json`. Temporary blob/file paths and missing assets are rejected. `data/portfolio.ts` imports this single published source.
+3. Review the diff and run `npm run lint`, `npm run typecheck`, `npm run test:auth`, `npm run test:content`, and `npm run build`. Get publication approval before committing or deploying.
+4. After approval, commit and push only the reviewed files to GitHub:
    ```bash
-   git add .
+   git add data.json data/portfolio.ts public/assets
    git commit -m "Update portfolio content from live editor"
    git push origin main
    ```
-   Vercel will automatically detect the push and redeploy your portfolio within ~45 seconds!
+   Vercel deploys the connected branch. Verify the deployment is Ready and test the production URL in a private browser on desktop and mobile.
 
 ### 5. Resetting to Default
 Click the **"Reset All"** button in the editor toolbar to wipe local browser edits and restore the original codebase configuration.

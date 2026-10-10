@@ -6,8 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "test:auth": "node --test tests/admin-auth.cjs"
+    "lint": "eslint .",
+    "test:auth": "node --test tests/admin-auth.cjs",
+    "typecheck": "tsc --noEmit",
+    "test:content": "node --test tests/portfolio-content.cjs"
   },
   "dependencies": {
     "clsx": "^2.1.1",

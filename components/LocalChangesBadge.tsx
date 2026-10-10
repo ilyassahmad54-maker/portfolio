@@ -15,14 +15,14 @@ export default function LocalChangesBadge() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 20 }}
-          className="fixed bottom-6 left-6 z-40 hidden sm:flex items-center gap-2 p-1.5 pl-3 rounded-full bg-slate-900/90 dark:bg-slate-800/90 border border-amber-500/40 shadow-xl backdrop-blur-md text-xs"
+          className="fixed bottom-6 left-6 z-40 flex items-center gap-2 p-1.5 pl-3 rounded-full bg-slate-900/90 dark:bg-slate-800/90 border border-amber-500/40 shadow-xl backdrop-blur-md text-xs"
         >
           <div className="flex items-center gap-1.5 text-amber-300 font-medium">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
             </span>
-            <span>Editing (local changes)</span>
+            <span>Unpublished local draft</span>
           </div>
 
           <button
