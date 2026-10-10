@@ -1,0 +1,439 @@
+import { PortfolioData } from '@/types/portfolio';
+
+/**
+ * =======================================================================
+ * PORTFOLIO DATA - SINGLE SOURCE OF TRUTH
+ * =======================================================================
+ * This file contains ALL text content, links, project details, and
+ * metadata used throughout the entire portfolio website.
+ *
+ * To customize your portfolio:
+ * 1. Edit the fields below marked with "// EDIT:"
+ * 2. Add or replace images in the /public/assets/ folder
+ * 3. Add your PDF resume in /public/cv.pdf
+ * =======================================================================
+ */
+
+export const portfolioData: PortfolioData = {
+  profile: {
+    // EDIT: Replace with your full name
+    name: 'Ilyas Ahmad',
+
+    // EDIT: Replace with your main professional tagline/subtitle
+    headline: 'Data Analyst | Data Scientist | Machine Learning Engineer',
+
+    // EDIT: Dynamic roles cycled in the animated typed headline in the Hero section
+    roles: [
+      'Data Analyst',
+      'Data Scientist',
+      'Machine Learning Engineer',
+      'Computer Vision Specialist',
+      'Deep Learning Researcher',
+    ],
+
+    // EDIT: Your current location / base city
+    location: 'Peshawar, Pakistan',
+
+    // EDIT: Your professional email address
+    email: 'ilyassahmad54@gmail.com',
+
+    // EDIT: Your contact phone number with country code
+    phone: '+92 341 8157001',
+
+    // EDIT: Availability badge text shown in the Hero section
+    statusBadge: 'Open to Work & AI/ML Opportunities',
+
+    // EDIT: High-level summary shown in hero and SEO meta tags
+    summary:
+      'Data Science student at UET Peshawar (GPA 3.7) with hands-on experience across AI, machine learning, computer vision, and data analytics. Skilled in Python, SQL, deep learning, and visualization (Excel, Power BI, Tableau).',
+
+    // EDIT: Detailed bio paragraphs displayed in the About section
+    aboutParagraphs: [
+      'I am a Data Science undergraduate at the University of Engineering and Technology (UET) Peshawar with a stellar 3.7 GPA. My focus lies at the intersection of modern Machine Learning, Computer Vision, and Business Intelligence.',
+      'Through four intensive internships at premier institutions including the National Center of Artificial Intelligence (NCAI) and FlyRank AI, I have engineered end-to-end multimodal AI pipelines, deployed custom YOLO object detection models, and built executive-grade dashboards that transform raw data into high-impact operational insights.',
+      'Whether optimizing deep neural network architectures (ResNet, U-Net, Vision Transformers) or crafting predictive analytics in Python and SQL, I pride myself on writing clean, reproducible code and communicating analytical findings clearly to cross-functional stakeholders.',
+    ],
+
+    // EDIT: Path to your downloadable resume in the /public folder
+    cvUrl: '/cv.pdf',
+
+    // EDIT: Path to your profile picture in the /public folder
+    profileImage: '/assets/profile.jpg',
+
+    // EDIT: Your Formspree form endpoint for the contact form (e.g., https://formspree.io/f/your_form_id)
+    formspreeEndpoint: 'https://formspree.io/f/YOUR_FORMSPREE_ID',
+  },
+
+  // EDIT: Update your social media and external profile links
+  socialLinks: [
+    {
+      platform: 'github',
+      label: 'GitHub',
+      // EDIT: Replace with your actual GitHub profile URL
+      url: 'https://github.com/ilyasahmad',
+      username: 'ilyasahmad',
+    },
+    {
+      platform: 'linkedin',
+      label: 'LinkedIn',
+      // EDIT: Replace with your actual LinkedIn profile URL
+      url: 'https://linkedin.com/in/ilyas-ahmad-1980a4285',
+      username: 'ilyas-ahmad-1980a4285',
+    },
+    {
+      platform: 'email',
+      label: 'Email',
+      // EDIT: Replace with your email mailto link
+      url: 'mailto:ilyassahmad54@gmail.com',
+      username: 'ilyassahmad54@gmail.com',
+    },
+    {
+      platform: 'phone',
+      label: 'Phone',
+      // EDIT: Replace with your tel link
+      url: 'tel:+923418157001',
+      username: '+92 341 8157001',
+    },
+  ],
+
+  // EDIT: Stats displayed in the About section counter
+  stats: [
+    {
+      label: 'Production Projects',
+      value: 6,
+      suffix: '+',
+      description: 'End-to-end ML, CV & analytics applications delivered',
+    },
+    {
+      label: 'Completed Internships',
+      value: 4,
+      suffix: '',
+      description: 'Hands-on industry & research institute experience',
+    },
+    {
+      label: 'Tools & Technologies',
+      value: 10,
+      suffix: '+',
+      description: 'Deep stack in Python, DL, SQL, Power BI & Tableau',
+    },
+    {
+      label: 'Cumulative GPA',
+      value: 3.7,
+      suffix: '/4.0',
+      description: 'Top academic percentile at UET Peshawar',
+    },
+  ],
+
+  // EDIT: Categorized skills with badges and domain descriptions
+  skills: [
+    {
+      id: 'programming',
+      category: 'Programming & Databases',
+      description: 'Core software engineering and data query languages',
+      skills: [
+        { name: 'Python', highlighted: true },
+        { name: 'Pandas', highlighted: true },
+        { name: 'NumPy', highlighted: true },
+        { name: 'Matplotlib & Seaborn', highlighted: false },
+        { name: 'Scikit-learn', highlighted: true },
+        { name: 'SQL (MySQL)', highlighted: true },
+        { name: 'C++', highlighted: false },
+      ],
+    },
+    {
+      id: 'ai-ml',
+      category: 'AI, Machine Learning & Vision',
+      description: 'Deep learning frameworks, computer vision architectures, and predictive modeling',
+      skills: [
+        { name: 'Deep Learning', highlighted: true },
+        { name: 'Computer Vision', highlighted: true },
+        { name: 'Transfer Learning', highlighted: true },
+        { name: 'YOLO (v8/v9/v11)', highlighted: true },
+        { name: 'ResNet', highlighted: false },
+        { name: 'U-Net', highlighted: false },
+        { name: 'Vision Transformers (ViT)', highlighted: true },
+        { name: 'Multimodal AI', highlighted: true },
+        { name: 'Regression & Classification', highlighted: false },
+        { name: 'PyTorch / TensorFlow', highlighted: true },
+      ],
+    },
+    {
+      id: 'data-viz',
+      category: 'Data Analytics & Visualization',
+      description: 'Business intelligence, exploratory data analysis, and dashboard engineering',
+      skills: [
+        { name: 'Microsoft Excel (VLOOKUP, Pivots)', highlighted: true },
+        { name: 'Power BI', highlighted: true },
+        { name: 'Tableau', highlighted: true },
+        { name: 'Data Validation & Cleaning', highlighted: true },
+        { name: 'Statistical Data Analysis', highlighted: false },
+        { name: 'Feature Engineering', highlighted: false },
+      ],
+    },
+    {
+      id: 'tools-soft',
+      category: 'Developer Tools & Soft Skills',
+      description: 'Development environment, version control, and professional competencies',
+      skills: [
+        { name: 'Jupyter Notebooks', highlighted: true },
+        { name: 'Git & GitHub', highlighted: true },
+        { name: 'Stakeholder Communication', highlighted: true },
+        { name: 'Analytical Problem Solving', highlighted: true },
+        { name: 'Technical Documentation', highlighted: false },
+        { name: 'Agile Team Collaboration', highlighted: false },
+      ],
+    },
+  ],
+
+  // EDIT: Work experience timeline entries
+  experience: [
+    {
+      id: 'exp-ncai',
+      role: 'AI Intern',
+      company: 'NCAI (National Center of Artificial Intelligence), UET Peshawar',
+      location: 'Peshawar, Pakistan',
+      period: '2025 – Present',
+      current: true,
+      description: [
+        'Spearheaded end-to-end YOLO object detection pipelines including custom dataset preparation, bounding-box annotation, training configuration, and rigorous multi-metric evaluation.',
+        'Applied transfer learning across advanced backbones including ResNet, U-Net, and Vision Transformers (ViT) to benchmark model generalization on complex visual inputs.',
+        'Architected and integrated a multimodal AI pipeline synthesizing computer vision detections with descriptive contextual analysis.',
+      ],
+      technologies: ['YOLO', 'Vision Transformers', 'ResNet', 'U-Net', 'PyTorch', 'Computer Vision', 'Multimodal AI'],
+    },
+    {
+      id: 'exp-flyrank',
+      role: 'Machine Learning Intern',
+      company: 'FlyRank AI',
+      location: 'Remote / Hybrid',
+      period: '2024',
+      current: false,
+      description: [
+        'Executed deep exploratory data analysis and systematic preprocessing in Python for heterogeneous raw datasets.',
+        'Formulated executive-ready analytical reports and visual summaries, uncovering critical trend anomalies and distribution inconsistencies.',
+        'Collaborated with senior ML engineers to benchmark baseline classification models and improve feature selection pipelines.',
+      ],
+      technologies: ['Python', 'Pandas', 'NumPy', 'Scikit-learn', 'Data Preprocessing', 'Feature Selection'],
+    },
+    {
+      id: 'exp-decodelabs',
+      role: 'Data Science Intern',
+      company: 'DecodeLabs',
+      location: 'Peshawar, Pakistan',
+      period: '2024',
+      current: false,
+      description: [
+        'Conducted rigorous statistical analysis combining Python scripts with advanced Excel data modeling.',
+        'Designed interactive Power BI business intelligence dashboards providing real-time visibility into key performance indicators.',
+        'Trained and evaluated predictive regression models to forecast target metrics with high accuracy.',
+      ],
+      technologies: ['Python', 'Power BI', 'Excel Pivots', 'Regression Models', 'Data Visualization'],
+    },
+    {
+      id: 'exp-codealpha',
+      role: 'Data Science Intern',
+      company: 'CodeAlpha',
+      location: 'Remote',
+      period: '2024',
+      current: false,
+      description: [
+        'Implemented automated data cleaning, schema validation, and missing-value imputation workflows.',
+        'Constructed high-clarity visualization suites communicating feature correlations and distribution skewness.',
+        'Benchmarked supervised machine learning models using precision, recall, ROC-AUC, and F1-score evaluation metrics.',
+      ],
+      technologies: ['Python', 'Data Cleaning', 'Data Validation', 'Model Evaluation', 'Matplotlib'],
+    },
+  ],
+
+  // EDIT: Featured portfolio projects with slugs matching files in /public/assets/projects/[slug].jpg
+  projects: [
+    {
+      id: 'proj-multimodal-ai',
+      title: 'Multimodal AI Pipeline',
+      slug: 'multimodal-ai',
+      category: 'AI & Computer Vision',
+      summary: 'Unified end-to-end pipeline integrating multiple computer vision and contextual reasoning components.',
+      description:
+        'A modular multimodal intelligence pipeline that couples deep visual feature extraction with NLP-based semantic understanding. Implements automated image preprocessing, Vision Transformer representation, and multi-stage downstream inference.',
+      image: '/assets/projects/multimodal-ai.jpg',
+      tags: ['Multimodal AI', 'PyTorch', 'Vision Transformers', 'Computer Vision', 'Deep Learning'],
+      // EDIT: Replace with your actual project GitHub URL
+      githubUrl: 'https://github.com/ilyasahmad/multimodal-ai-pipeline',
+      liveDemoUrl: 'https://github.com/ilyasahmad/multimodal-ai-pipeline',
+      featured: true,
+      highlights: [
+        'Integrated ViT visual embeddings with contextual representations',
+        'Modular architecture supporting plug-and-play backbone models',
+        'Optimized inference latency with TorchScript export',
+      ],
+    },
+    {
+      id: 'proj-helmet-detection',
+      title: 'Real-time Helmet Detection (YOLO)',
+      slug: 'helmet-detection',
+      category: 'AI & Computer Vision',
+      summary: 'High-accuracy safety helmet detection system using state-of-the-art YOLO architecture.',
+      description:
+        'End-to-end computer vision safety system designed for construction and industrial surveillance. Encompasses custom bounding-box dataset annotation, data augmentation, YAML configuration, hyperparameter tuning, and real-time video stream inference.',
+      image: '/assets/projects/helmet-detection.jpg',
+      tags: ['YOLO', 'OpenCV', 'Object Detection', 'Python', 'Transfer Learning'],
+      // EDIT: Replace with your actual project GitHub URL
+      githubUrl: 'https://github.com/ilyasahmad/helmet-detection-yolo',
+      liveDemoUrl: 'https://github.com/ilyasahmad/helmet-detection-yolo',
+      featured: true,
+      highlights: [
+        'Trained on diverse real-world illumination and angle conditions',
+        'Achieved superior mAP@0.5 on industrial safety benchmark tests',
+        'Real-time bounding-box rendering with sub-30ms per-frame latency',
+      ],
+    },
+    {
+      id: 'proj-diabetes-care',
+      title: 'DiabetesCare Prediction System',
+      slug: 'diabetes-care',
+      category: 'Machine Learning',
+      summary: 'Interactive clinical risk prediction web application powered by Logistic Regression & Streamlit.',
+      description:
+        'A healthcare decision support tool enabling patients and clinicians to calculate diabetes risk probabilities from clinical biomarker inputs. Features interactive probability sliders, risk stratification, and feature impact visualizations.',
+      image: '/assets/projects/diabetes-care.jpg',
+      tags: ['Logistic Regression', 'Streamlit', 'Scikit-learn', 'Healthcare AI', 'Python'],
+      // EDIT: Replace with your actual project GitHub URL
+      githubUrl: 'https://github.com/ilyasahmad/diabetes-care-ml',
+      liveDemoUrl: 'https://github.com/ilyasahmad/diabetes-care-ml',
+      featured: true,
+      highlights: [
+        'Rigorous cross-validated model training with feature scaling',
+        'Real-time risk scoring through an intuitive Streamlit interface',
+        'Transparent probability breakdowns for patient consultations',
+      ],
+    },
+    {
+      id: 'proj-customer-segmentation',
+      title: 'Customer Segmentation Analysis',
+      slug: 'customer-segmentation',
+      category: 'Data Analytics & Viz',
+      summary: 'Data-driven behavioral clustering uncovering distinct consumer demographic cohorts.',
+      description:
+        'Unsupervised machine learning system using K-Means and Hierarchical Clustering to segment commercial customer portfolios based on spending habits, purchase frequency, and annual revenue contribution.',
+      image: '/assets/projects/customer-segmentation.jpg',
+      tags: ['K-Means Clustering', 'EDA', 'Unsupervised ML', 'Seaborn', 'Python'],
+      // EDIT: Replace with your actual project GitHub URL
+      githubUrl: 'https://github.com/ilyasahmad/customer-segmentation-eda',
+      liveDemoUrl: 'https://github.com/ilyasahmad/customer-segmentation-eda',
+      featured: false,
+      highlights: [
+        'Determined optimal k-clusters utilizing the Elbow method & Silhouette scores',
+        'Mapped actionable marketing personas for business acquisition strategy',
+        'Comprehensive multi-dimensional scatter & pair plot visualizations',
+      ],
+    },
+    {
+      id: 'proj-student-ai-dashboard',
+      title: 'Student AI Usage Analytics Dashboard',
+      slug: 'student-ai-dashboard',
+      category: 'Data Analytics & Viz',
+      summary: 'Executive-level interactive Tableau dashboard examining AI adoption among academic students.',
+      description:
+        'A comprehensive business intelligence dashboard tracking AI tool adoption rates, academic performance correlation, frequency of usage across majors, and perceived ethical implications within higher education.',
+      image: '/assets/projects/student-ai-dashboard.jpg',
+      tags: ['Tableau', 'Business Intelligence', 'Data Storytelling', 'Excel', 'Data Validation'],
+      // EDIT: Replace with your actual project GitHub URL
+      githubUrl: 'https://github.com/ilyasahmad/student-ai-usage-dashboard',
+      liveDemoUrl: 'https://github.com/ilyasahmad/student-ai-usage-dashboard',
+      featured: false,
+      highlights: [
+        'Interactive filtering across academic departments and study levels',
+        'Custom calculated fields for GPA impact correlation analysis',
+        'Clean UX layout tailored for university administration stakeholders',
+      ],
+    },
+    {
+      id: 'proj-heart-disease-prediction',
+      title: 'Heart Disease Predictive System',
+      slug: 'heart-disease-prediction',
+      category: 'Machine Learning',
+      summary: 'Supervised classification system with an interactive UI evaluating cardiovascular disease indicators.',
+      description:
+        'End-to-end cardiovascular risk prediction system evaluating clinical metrics like blood pressure, cholesterol, ECG anomalies, and maximum heart rate. Implements ensemble classifiers for maximum recall and diagnostic sensitivity.',
+      image: '/assets/projects/heart-disease-prediction.jpg',
+      tags: ['Classification', 'Scikit-learn', 'Feature Engineering', 'Streamlit', 'Python'],
+      // EDIT: Replace with your actual project GitHub URL
+      githubUrl: 'https://github.com/ilyasahmad/heart-disease-prediction',
+      liveDemoUrl: 'https://github.com/ilyasahmad/heart-disease-prediction',
+      featured: false,
+      highlights: [
+        'Compared Random Forest, XGBoost, and Logistic Regression baselines',
+        'Prioritized recall optimization to minimize false negatives in diagnostics',
+        'Interactive diagnostic web UI with instant clinical advice suggestions',
+      ],
+    },
+  ],
+
+  // EDIT: Educational background details
+  education: [
+    {
+      id: 'edu-uet',
+      degree: 'BS in Data Science',
+      institution: 'University of Engineering and Technology (UET), Peshawar',
+      location: 'Peshawar, Pakistan',
+      period: '2024 – Present',
+      // EDIT: Replace with your current GPA
+      gpa: '3.7 / 4.0',
+      details: [
+        'Core Coursework: Machine Learning, Artificial Intelligence, Data Structures & Algorithms, Database Systems (SQL), Linear Algebra, Probability & Statistics.',
+        'Active contributor to student technical initiatives, AI workshops, and competitive hackathons.',
+        'Consistently recognized for top-tier academic performance in technical coursework.',
+      ],
+    },
+  ],
+
+  // EDIT: Professional certifications and course credentials
+  certifications: [
+    {
+      id: 'cert-datacamp',
+      title: 'Data Science Learning Path',
+      issuer: 'DataCamp',
+      date: '2024',
+      // EDIT: Replace with your certification link if available
+      credentialUrl: 'https://datacamp.com',
+      skillsLearned: ['Python for Data Science', 'Data Wrangling', 'Statistical Inference', 'Machine Learning Foundations'],
+    },
+    {
+      id: 'cert-udemy-sql',
+      title: 'MySQL for Data Analysis & Business Intelligence',
+      issuer: 'Udemy',
+      date: '2024',
+      // EDIT: Replace with your certification link if available
+      credentialUrl: 'https://udemy.com',
+      skillsLearned: ['Complex SQL Joins', 'Subqueries', 'Aggregate Functions', 'Database Schema Optimization'],
+    },
+    {
+      id: 'cert-udemy-python',
+      title: 'Python for Data Science & Machine Learning Bootcamp',
+      issuer: 'Udemy',
+      date: '2024',
+      // EDIT: Replace with your certification link if available
+      credentialUrl: 'https://udemy.com',
+      skillsLearned: ['Pandas & NumPy', 'Data Visualization (Matplotlib & Seaborn)', 'Scikit-learn Algorithms'],
+    },
+    {
+      id: 'cert-khan-stats',
+      title: 'Probability & Statistics for Machine Learning',
+      issuer: 'Khan Academy',
+      date: '2024',
+      // EDIT: Replace with your certification link if available
+      credentialUrl: 'https://khanacademy.org',
+      skillsLearned: ['Bayesian Probability', 'Hypothesis Testing', 'Probability Distributions', 'Regression Diagnostics'],
+    },
+  ],
+
+  // EDIT: Smooth navigation bar items
+  navItems: [
+    { label: 'About', href: '#about' },
+    { label: 'Skills', href: '#skills' },
+    { label: 'Experience', href: '#experience' },
+    { label: 'Projects', href: '#projects' },
+    { label: 'Education', href: '#education' },
+    { label: 'Contact', href: '#contact' },
+  ],
+};

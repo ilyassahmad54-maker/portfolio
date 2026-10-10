@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 248 250 252;
+    --foreground: 15 23 42;
+    --card: 255 255 255;
+    --border: 226 232 240;
+  }
+
+  .dark {
+    --background: 11 17 32;
+    --foreground: 248 250 252;
+    --card: 17 24 39;
+    --border: 30 41 59;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-800 dark:bg-[#0B1120] dark:text-slate-100 transition-colors duration-300 antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  ::selection {
+    @apply bg-cyan-500/20 text-cyan-500 dark:bg-cyan-500/30 dark:text-cyan-300;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 via-teal-500 to-violet-600 dark:from-cyan-400 dark:via-teal-300 dark:to-violet-400;
+  }
+
+  .text-gradient-purple {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-indigo-500 dark:from-violet-400 dark:to-indigo-300;
+  }
+
+  .bg-gradient-accent {
+    @apply bg-gradient-to-r from-cyan-500 to-violet-600 hover:from-cyan-400 hover:to-violet-500;
+  }
+
+  .border-gradient {
+    border-image: linear-gradient(to right, #06b6d4, #8b5cf6) 1;
+  }
+
+  .glass-card {
+    @apply bg-white/80 dark:bg-slate-900/70 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-none;
+  }
+
+  .glass-nav {
+    @apply bg-white/85 dark:bg-[#0B1120]/85 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-800/60;
+  }
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100 dark:bg-[#0B1120];
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 dark:bg-slate-700 rounded-full hover:bg-slate-400 dark:hover:bg-slate-600;
+}
