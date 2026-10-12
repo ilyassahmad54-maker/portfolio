@@ -308,6 +308,25 @@
   ],
   "projects": [
     {
+      "id": "proj-1791656404798",
+      "title": "Unemployment Data Analysis Dashboard",
+      "slug": "new-project-1791656404798",
+      "category": "Data Analytics & Viz",
+      "summary": "Short overview of the project.",
+      "description": "This project is a Data Science internship project focused on analyzing unemployment data and transforming raw data into meaningful insights using Python and Streamlit.\n\nThe project covers the complete data analysis workflow:\n\nData collection\nDataset understanding\nData cleaning and preprocessing\nExploratory Data Analysis (EDA)\nData visualization\nInteractive dashboard development\nThe final output is an interactive Streamlit dashboard that allows users to explore unemployment trends, compare regions, and understand patterns in the dataset.\n\n",
+      "image": "/assets/unemployment-c3db711db38ef2016395.png",
+      "tags": [
+        "Python",
+        "PyTorch"
+      ],
+      "githubUrl": "https://github.com/ilyassahmad54-maker/codealpha_task",
+      "demoUrl": "https://labourlens-snbtordh3wynoppzmkj9uw.streamlit.app/",
+      "featured": false,
+      "highlights": [
+        "Key milestone achieved"
+      ]
+    },
+    {
       "id": "proj-1791623262968",
       "title": "RiskRadar – AI-Powered Workplace Hazard Detection & Safety Management System",
       "slug": "new-project-1791623262968",
