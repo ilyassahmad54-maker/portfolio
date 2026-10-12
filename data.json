@@ -314,7 +314,7 @@
       "category": "AI & Computer Vision",
       "summary": "Short overview of the project.",
       "description": "RiskRadar is an AI-powered mobile application developed using Flutter, Supabase, Firebase, and Google Gemini AI to improve workplace safety through intelligent hazard detection and real-time incident reporting.\n\nThe system enables workers to report workplace hazards using images, descriptions, and voice notes, while AI analyzes uploaded images to identify potential safety risks. Safety officers can review incidents, assign corrective tasks to contractors, and track hazard resolution.\n\nKey Features: AI-based hazard image analysis, real-time hazard reporting, role-based access (Worker, Safety Officer, Contractor), task assignment, incident tracking, offline synchronization, SOS functionality, and push notifications.",
-      "image": "/assets/imported-ffc4a86dcfd06378430c.png",
+      "image": "/assets/riskradar-6b4d1ab9f5bdadbcf9ae.jpg",
       "tags": [
         "Flutter (Dart)",
         "Supabase",
