@@ -3,7 +3,7 @@ import postgres from 'postgres';
 import { CmsUnavailable, safeDatabaseError } from './errors';
 import { assertPreviewConfiguration } from './preview';
 
-export function createCmsQuery(factory: typeof postgres = postgres, uriProvider = () => process.env.SUPABASE_DATABASE_URL, deadlineMs = 8000) {
+export function createCmsQuery(factory: typeof postgres = postgres, uriProvider = () => process.env.SUPABASE_DATABASE_URL, deadlineMs = 15000) {
   let client: ReturnType<typeof postgres> | undefined;
   function connection() {
     if (client) return client;
@@ -20,7 +20,7 @@ export function createCmsQuery(factory: typeof postgres = postgres, uriProvider 
       // across shared transaction-pooler connections. Mutations are single SQL calls.
       const ca=process.env.SUPABASE_DATABASE_CA;
       if(ca && (ca.length>32768 || !ca.includes('-----BEGIN CERTIFICATE-----') || !ca.includes('-----END CERTIFICATE-----')))throw new Error();
-      client = factory(uri, { prepare: false, max: 2, connect_timeout: 5, idle_timeout: 20,
+      client = factory(uri, { prepare: false, max: 2, connect_timeout: 10, idle_timeout: 20,
         max_lifetime: 60 * 30, ssl: { rejectUnauthorized: true, ...(ca ? {ca} : {}) }, onnotice: () => {} });
       return client;
     } catch { throw new CmsUnavailable('configuration'); }
@@ -64,6 +64,9 @@ export function createCmsQuery(factory: typeof postgres = postgres, uriProvider 
       // pool unusable. Fail this request, then let the next request reconnect.
       // Never retry a mutation automatically or recycle on ordinary conflicts.
       if (failure instanceof CmsUnavailable && failure.category !== 'configuration' && !expired && client === database) {
+        const code = (error as { code?: unknown } | null)?.code;
+        const known = new Set(['28P01','28000','53300','57P01','57P02','57P03','08000','08003','08006','08001','08P01','57014','55P03','40P01','CONNECT_TIMEOUT','CONNECTION_CLOSED','CONNECTION_ENDED','CONNECTING_CLOSED','ECONNRESET','ETIMEDOUT','ENOTFOUND','ECONNREFUSED','XX000']);
+        console.error(JSON.stringify({ event: 'cms_database', category: failure.category, code: typeof code === 'string' && known.has(code) ? code : 'unclassified' }));
         client = undefined;
         void database.end({ timeout: 0 }).catch(() => {});
       }
