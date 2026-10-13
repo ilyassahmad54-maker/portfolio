@@ -67,7 +67,9 @@ export const cmsStore: CmsStore = {
   published: async () => decodePublished(await queryCms('SELECT cms.read_published() AS result')),
   draft: async () => decodeDraft(await queryCms('SELECT cms.read_draft() AS result')),
   state: async () => decodeState(await queryCms('SELECT cms.read_state() AS result')),
-  save: async request => decodeChange(await queryCms('SELECT cms.save_draft($1::jsonb,$2::bigint,$3::uuid) AS result', [JSON.stringify(request.content), request.expectedVersion, request.requestId])),
+  // Bind serialized JSON as text: Postgres.js JSONB serialization would encode
+  // an already-stringified document again when the parameter itself is jsonb.
+  save: async request => decodeChange(await queryCms('SELECT cms.save_draft($1::text::jsonb,$2::bigint,$3::uuid) AS result', [JSON.stringify(request.content), request.expectedVersion, request.requestId])),
   publish: async request => { const state=await cmsStore.state(); if(state.version===request.expectedVersion && state.draftRevisionId===request.draftRevisionId) { const snapshot=await cmsStore.revision(request.draftRevisionId!); await verifyContentAssets(snapshot.content); } return decodeChange(await queryCms('SELECT cms.publish_draft($1::bigint,$2::uuid,$3::uuid) AS result', [request.expectedVersion, request.draftRevisionId!, request.requestId])); },
   discard: async request => decodeChange(await queryCms('SELECT cms.discard_draft($1::bigint,$2::uuid,$3::boolean,$4::uuid) AS result', [request.expectedVersion, request.draftRevisionId!, request.confirmed!, request.requestId])),
 };
