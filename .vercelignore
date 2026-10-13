@@ -1,0 +1,12 @@
+# Explicit upload exclusions: Vercel CLI does not use this repository's .gitignore.
+.git
+.next
+.vercel
+node_modules
+.env*
+*.docx
+~$*
+supabase/.temp
+docs
+tests
+.DS_Store
