@@ -40,7 +40,7 @@ function load() {
     if (cmd === 'EVAL') { const bucket = JSON.parse(options.body)[3]; const n = (entries.get(bucket) || 0) + 1; entries.set(bucket,n); if (n === 1) expires.set(bucket, now + 900); result = n; }
     return { ok: true, status: 200, json: async () => ({ result }) };
   };
-  vm.runInNewContext(code, { exports, require: name => name === 'server-only' ? {} : require(name), process: { env }, fetch, AbortSignal, Buffer, URL, console: { error: value => logs.push(JSON.parse(value)) } });
+  vm.runInNewContext(code, { exports, require: name => name === 'server-only' ? {} : name.startsWith('./') ? require('../scripts/cms/load-module.cjs').loadModule('lib/'+name.slice(2)+'.ts',{'server-only':{}}) : require(name), process: { env }, fetch, AbortSignal, Buffer, URL, console: { error: value => logs.push(JSON.parse(value)) } });
   return { api: exports, env, entries, commands, advance: seconds => { now += seconds; }, offline: () => { unavailable = true; }, logs, fail: (operation, response) => failures.set(operation, response) };
 }
 const request = token => ({ cookies: { get: () => token ? { value: token } : undefined }, headers: new Headers({ origin: 'https://portfolio.test', 'x-vercel-forwarded-for': '192.0.2.1' }), nextUrl: { origin: 'https://portfolio.test' } });
@@ -242,4 +242,8 @@ test('timeouts, transport failures and configuration errors never log raw errors
   api.reportAdminFailure(new Error('private unexpected error'), 'login', 'request_body');
   assert.equal(logs[0].category, 'unexpected');
   assert.equal(JSON.stringify(logs).includes('private unexpected error'), false);
+});
+
+test('concurrent Redis login attempts retain the five-attempt shared limit',async()=>{
+ const {api}=load();const results=await Promise.all(Array.from({length:20},()=>api.limited(request())));assert.equal(results.filter(value=>value===false).length,5);assert.equal(results.filter(value=>value===true).length,15);
 });

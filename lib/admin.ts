@@ -1,6 +1,9 @@
 import 'server-only';
 import { createHash, randomBytes, timingSafeEqual } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
+import { adminStateBackend } from './admin-backend';
+import { postgresAdminState } from './admin-postgres';
+import { assertPreviewConfiguration } from './cms/preview';
 
 export const cookieName = process.env.NODE_ENV === 'production' ? '__Host-admin-session' : 'admin-session';
 const lifetime = 3600;
@@ -9,9 +12,9 @@ type RedisOperation = 'EVAL' | 'SET' | 'GET' | 'DEL';
 type FailureCategory = 'configuration' | 'redis_http_auth' | 'redis_http_rate_limit' |
   'redis_http_error' | 'redis_auth' | 'redis_permission' | 'redis_response_error' |
   'redis_invalid_json' | 'redis_invalid_response' | 'redis_invalid_result' |
-  'redis_timeout' | 'redis_network';
+  'redis_timeout' | 'redis_network' | 'postgres_unavailable';
 type ConfigurationReason = 'passcode_missing' | 'passcode_too_short' | 'url_missing' |
-  'url_invalid' | 'token_missing' | 'token_format_invalid';
+  'url_invalid' | 'token_missing' | 'token_format_invalid' | 'backend_invalid';
 type FailureStage = 'rate_limit' | 'request_body' | 'credential_check' | 'session_revoke' |
   'session_create' | 'session_lookup' | 'cookie';
 
@@ -48,6 +51,9 @@ export function config() {
   };
   if (!passcode) invalid('passcode_missing');
   if (passcode!.length < 20) invalid('passcode_too_short');
+  let backend:ReturnType<typeof adminStateBackend> = 'redis';
+  try {backend=adminStateBackend(process.env);assertPreviewConfiguration(process.env);}catch{invalid('backend_invalid');}
+  if(backend === 'postgres')return {passcode:passcode!,url:'',token:'',backend:backend};
   if (!url) invalid('url_missing');
   try {
     const parsed = new URL(url!);
@@ -57,12 +63,13 @@ export function config() {
   if (!token) invalid('token_missing');
   // The variable must contain the raw REST token, not a pasted Authorization header.
   if (/\s|["']/.test(token!)) invalid('token_format_invalid');
-  return { passcode: passcode!, url: url!, token: token! };
+  return { passcode: passcode!, url: url!, token: token!, backend:backend };
 }
 
 export async function redis(command: (string | number)[]) {
   const operation = command[0] as RedisOperation;
-  const { url, token } = config();
+  const { url, token, backend } = config();
+  if(backend!=='redis')throw new AdminFailure('configuration',undefined,undefined,'backend_invalid');
   let response: Response;
   try {
     response = await fetch(url, {
@@ -109,6 +116,14 @@ export async function redis(command: (string | number)[]) {
 }
 function digest(value: string) { return createHash('sha256').update(value).digest(); }
 function sessionKey(token: string) { return `portfolio:session:${digest(token).toString('hex')}`; }
+async function postgresOperation<T>(work:()=>Promise<T>):Promise<T>{
+  try{return await work();}catch{throw new AdminFailure('postgres_unavailable');}
+}
+export function configuredAdminBackend(){return config().backend;}
+export async function postgresRate(operation:string,ipHash:string,sessionHash:string|null){
+  if(configuredAdminBackend()!=='postgres')throw new AdminFailure('configuration',undefined,undefined,'backend_invalid');
+  return postgresOperation(()=>postgresAdminState.rate(operation,ipHash,sessionHash));
+}
 export function sameOrigin(request: NextRequest) {
   return request.headers.get('origin') === request.nextUrl.origin;
 }
@@ -119,6 +134,7 @@ export async function limited(request: NextRequest) {
   // Vercel supplies x-vercel-forwarded-for; unrecognized hosts share a conservative bucket.
   const ip = process.env.VERCEL ? request.headers.get('x-vercel-forwarded-for') || 'unknown' : 'local';
   const bucket = digest(ip).toString('hex');
+  if(configuredAdminBackend()==='postgres')return await postgresRate('login',bucket,null)>5;
   const script = "local n=redis.call('INCR',KEYS[1]); if n==1 then redis.call('EXPIRE',KEYS[1],900) end; return n";
   const count = await redis(['EVAL', script, 1, `portfolio:login:${bucket}`]);
   return (count as number) > 5;
@@ -129,15 +145,22 @@ export function validPasscode(value: string) {
 export async function newSession() {
   const token = randomBytes(32).toString('hex');
   // Bind sessions to current credentials so rotating the passcode invalidates them.
-  await redis(['SET', sessionKey(token), digest(config().passcode).toString('hex'), 'EX', lifetime]);
+  const settings=config();
+  if(settings.backend==='postgres')await postgresOperation(()=>postgresAdminState.create(digest(token).toString('hex'),digest(settings.passcode).toString('hex')));
+  else await redis(['SET', sessionKey(token), digest(settings.passcode).toString('hex'), 'EX', lifetime]);
   return token;
 }
 export async function sessionValid(request: NextRequest) {
   const token = request.cookies.get(cookieName)?.value;
   if (!token || !/^[a-f0-9]{64}$/.test(token)) return false;
-  return await redis(['GET', sessionKey(token)]) === digest(config().passcode).toString('hex');
+  const settings=config();
+  const fingerprint=settings.backend==='postgres'?await postgresOperation(()=>postgresAdminState.read(digest(token).toString('hex'))):await redis(['GET', sessionKey(token)]);
+  return fingerprint === digest(settings.passcode).toString('hex');
 }
 export async function revoke(request: NextRequest) {
   const token = request.cookies.get(cookieName)?.value;
-  if (token && /^[a-f0-9]{64}$/.test(token)) await redis(['DEL', sessionKey(token)]);
+  if (token && /^[a-f0-9]{64}$/.test(token)) {
+    if(configuredAdminBackend()==='postgres')await postgresOperation(()=>postgresAdminState.revoke(digest(token).toString('hex')));
+    else await redis(['DEL', sessionKey(token)]);
+  }
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
-import Image from 'next/image';
+import React, { useState, useRef, useEffect } from 'react';
+import Image from './PortfolioImage';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -21,22 +21,23 @@ import {
   Image as ImageIcon,
   ExternalLink,
 } from 'lucide-react';
+import CmsControls from './CmsControls';
+import { reorderProject } from '@/lib/cms/legacy';
 import { usePortfolio } from './PortfolioContext';
 import { portfolioData as initialPortfolioData } from '@/data/portfolio';
 import { ProjectItem, SkillItem, ExperienceItem, EducationItem, CertificationItem } from '@/types/portfolio';
 
-const MAX_IMAGE_SIZE_BYTES = 500 * 1024; // 500KB warning threshold
+
 
 export default function EditDrawer() {
   const {
-    data,
-    isUnlocked,
+    editorData: data,
+    cms, model, imageUrl,
     saveData,
-    resetToDefault,
     exportData,
     importData,
     lockSession,
-    isEditOpen,
+    isEditOpen, isLockOpen,
     setIsEditOpen,
     showToast,
   } = usePortfolio();
@@ -50,36 +51,34 @@ export default function EditDrawer() {
   const importFileRef = useRef<HTMLInputElement>(null);
   const profileFileInputRef = useRef<HTMLInputElement>(null);
 
+  const drawerRef=useRef<HTMLDivElement>(null);
+  useEffect(()=>{
+    if(!isEditOpen||isLockOpen)return;
+    const previous=document.activeElement as HTMLElement|null;
+    const overflow=document.body.style.overflow;document.body.style.overflow='hidden';
+    drawerRef.current?.querySelector<HTMLButtonElement>('button')?.focus();
+    const keyboard=(event:KeyboardEvent)=>{
+      if(event.key==='Escape'){setIsEditOpen(false);return;}
+      if(event.key!=='Tab')return;
+      const targets=Array.from(drawerRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), summary, a[href]')||[]).filter(item=>item.offsetParent!==null);
+      const first=targets[0],last=targets[targets.length-1];
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+    };
+    window.addEventListener('keydown',keyboard);
+    return()=>{document.body.style.overflow=overflow;window.removeEventListener('keydown',keyboard);previous?.focus();};
+  },[isEditOpen,isLockOpen,setIsEditOpen]);
+
   // Visibility is a convenience; server endpoints validate sessions independently.
-  if (!isUnlocked || !isEditOpen) {
+  if (!isEditOpen) {
     return null;
   }
 
-  // Handle profile image upload to base64
-  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      setProfileImageWarning('Image is large — consider compressing it for faster loading.');
-    } else {
-      setProfileImageWarning(null);
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      const updated = {
-        ...data,
-        profile: {
-          ...data.profile,
-          profileImage: base64,
-        },
-      };
-      saveData(updated);
-      showToast('Profile photo updated successfully!');
-    };
-    reader.readAsDataURL(file);
+  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file=e.target.files?.[0];e.target.value='';if(!file)return;
+    setProfileImageWarning('Uploading…');
+    const success=await model.replaceImage(file,'profile');
+    setProfileImageWarning(success?null:'Upload failed. Choose the file again to retry.');
   };
 
   const handleResetProfileImage = () => {
@@ -121,30 +120,10 @@ export default function EditDrawer() {
     });
   };
 
-  // Handle project image upload
-  const handleProjectImageUpload = (projectId: string, file: File) => {
-    if (file.size > MAX_IMAGE_SIZE_BYTES) {
-      setProjectImageWarning((prev) => ({
-        ...prev,
-        [projectId]: 'Image is large — consider compressing it for faster loading.',
-      }));
-    } else {
-      setProjectImageWarning((prev) => ({
-        ...prev,
-        [projectId]: null,
-      }));
-    }
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      const updatedProjects = data.projects.map((p) =>
-        p.id === projectId ? { ...p, image: base64 } : p
-      );
-      saveData({ ...data, projects: updatedProjects });
-      showToast('Project image updated!');
-    };
-    reader.readAsDataURL(file);
+  const handleProjectImageUpload = async (projectId: string, file: File) => {
+    setProjectImageWarning(previous=>({...previous,[projectId]:'Uploading…'}));
+    const success=await model.replaceImage(file,projectId);
+    setProjectImageWarning(previous=>({...previous,[projectId]:success?null:'Upload failed. Choose the file again to retry.'}));
   };
 
   return (
@@ -160,6 +139,7 @@ export default function EditDrawer() {
 
       {/* Drawer Container */}
       <motion.div
+        ref={drawerRef} role="dialog" aria-modal="true" aria-labelledby="portfolio-editor-title"
         initial={{ x: '100%' }}
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
@@ -173,14 +153,14 @@ export default function EditDrawer() {
               ✏️
             </span>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-                <span>Live Portfolio Editor</span>
+              <h2 id="portfolio-editor-title" className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <span>Portfolio Draft Editor</span>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
-                  Autosaving
+                  {model.dirty ? 'Unsaved' : 'Saved draft'}
                 </span>
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Changes persist locally in your browser immediately.
+                Edits stay in memory until Save Draft. Publish makes them public.
               </p>
             </div>
           </div>
@@ -220,6 +200,7 @@ export default function EditDrawer() {
             </button>
 
             <button
+              disabled={cms.busy || !cms.working}
               onClick={() => importFileRef.current?.click()}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 font-semibold text-slate-700 dark:text-slate-200 transition-colors"
               title="Upload data.json to restore edits"
@@ -239,28 +220,17 @@ export default function EditDrawer() {
                 reader.onload = () => {
                   importData(reader.result as string);
                 };
+                if(file.size>32*1024*1024){showToast('Import exceeds 32 MiB.');return;}
                 reader.readAsText(file);
                 e.target.value = '';
               }}
             />
           </div>
 
-          <button
-            onClick={() => {
-              if (confirm('Are you sure you want to reset all edits to the original codebase defaults?')) {
-                resetToDefault();
-              }
-            }}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 font-medium transition-colors"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Reset All</span>
-          </button>
+
         </div>
 
-        <p className="px-4 py-2 text-xs text-amber-700 dark:text-amber-300">
-          Edits are saved only in this browser. Export JSON to back up your draft and prepare it for publication through GitHub and Vercel.
-        </p>
+        <CmsControls />
 
         {/* Tab Navigation */}
         <div className="flex border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900 overflow-x-auto scrollbar-none">
@@ -291,7 +261,7 @@ export default function EditDrawer() {
         </div>
 
         {/* Drawer Body Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <fieldset disabled={cms.busy || !cms.working} className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-6">
           {/* ========================================================= */}
           {/* TAB 1: PROFILE & PHOTO                                   */}
           {/* ========================================================= */}
@@ -307,10 +277,10 @@ export default function EditDrawer() {
                 <div className="flex items-center gap-4">
                   <div className="relative w-20 h-20 rounded-2xl overflow-hidden bg-slate-900 border-2 border-cyan-500/40 shrink-0">
                     <Image
-                      src={data.profile.profileImage}
+                      src={imageUrl(data.profile.profileImage,true)}
                       alt="Profile preview"
                       fill
-                      unoptimized={data.profile.profileImage.startsWith('data:')}
+                      unoptimized={data.profile.profileImage.startsWith('/api/assets/')}
                       className="object-cover"
                     />
                   </div>
@@ -343,7 +313,7 @@ export default function EditDrawer() {
                     />
 
                     <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Accepts JPG, PNG, WebP. Updates live instantly.
+                      JPEG, PNG or WebP up to 4 MiB. Uploads remain unpublished.
                     </p>
 
                     {profileImageWarning && (
@@ -361,113 +331,119 @@ export default function EditDrawer() {
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Full Name
-                  </label>
+
                   <input
                     type="text"
                     value={data.profile.name}
                     onChange={(e) => handleProfileFieldChange('name', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Location
-                  </label>
+
                   <input
                     type="text"
                     value={data.profile.location}
                     onChange={(e) => handleProfileFieldChange('location', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Headline / Title
-                  </label>
+
                   <input
                     type="text"
                     value={data.profile.headline}
                     onChange={(e) => handleProfileFieldChange('headline', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Email Address
-                  </label>
+
                   <input
                     type="email"
                     value={data.profile.email}
                     onChange={(e) => handleProfileFieldChange('email', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Phone Number
-                  </label>
+
                   <input
                     type="text"
                     value={data.profile.phone}
                     onChange={(e) => handleProfileFieldChange('phone', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     GitHub Profile URL
-                  </label>
+
                   <input
                     type="text"
                     value={data.socialLinks.find((s) => s.platform === 'github')?.url || ''}
                     onChange={(e) => handleSocialLinkChange('github', e.target.value)}
                     placeholder="https://github.com/username"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     LinkedIn Profile URL
-                  </label>
+
                   <input
                     type="text"
                     value={data.socialLinks.find((s) => s.platform === 'linkedin')?.url || ''}
                     onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
                     placeholder="https://linkedin.com/in/username"
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     Availability Status Badge
-                  </label>
+
                   <input
                     type="text"
                     value={data.profile.statusBadge}
                     onChange={(e) => handleProfileFieldChange('statusBadge', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white"
-                  />
+                  /></label>
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     High-Level Bio Summary
-                  </label>
+
                   <textarea
                     rows={4}
                     value={data.profile.summary}
                     onChange={(e) => handleProfileFieldChange('summary', e.target.value)}
                     className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white resize-none"
-                  />
+                  /></label>
                 </div>
               </div>
+              <details className="space-y-3"><summary className="text-sm font-semibold cursor-pointer">Additional profile details</summary>
+                <label className="block text-xs">Rotating roles (one per line)<textarea className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800" value={data.profile.roles.join('\n')} onChange={e=>saveData({...data,profile:{...data.profile,roles:e.target.value.split('\n')}})}/></label>
+                <label className="block text-xs">About paragraphs (separate with a blank line)<textarea rows={5} className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800" value={data.profile.aboutParagraphs.join('\n\n')} onChange={e=>saveData({...data,profile:{...data.profile,aboutParagraphs:e.target.value.split('\n\n')}})}/></label>
+                <label className="block text-xs">CV asset path<input className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800" value={data.profile.cvUrl} onChange={e=>handleProfileFieldChange('cvUrl',e.target.value)}/></label>
+                <label className="block text-xs">Contact form endpoint<input className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-800" value={data.profile.formspreeEndpoint} onChange={e=>handleProfileFieldChange('formspreeEndpoint',e.target.value)}/></label>
+              </details>
             </div>
           )}
 
@@ -608,7 +584,7 @@ export default function EditDrawer() {
                 type="button"
                 onClick={() => {
                   const newProj: ProjectItem = {
-                    id: `proj-${Date.now()}`,
+                    id: `proj-${crypto.randomUUID()}`,
                     title: 'New AI Project',
                     slug: `new-project-${Date.now()}`,
                     category: 'AI & Computer Vision',
@@ -640,6 +616,9 @@ export default function EditDrawer() {
                     <span className="text-xs font-bold px-2.5 py-0.5 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
                       Project #{pIdx + 1}
                     </span>
+                    <div className="flex items-center gap-2">
+                    <button type="button" aria-label={`Move ${project.title} up`} disabled={pIdx===0} className="p-2 disabled:opacity-30" onClick={()=>saveData(reorderProject(data,project.id,-1))}>↑</button>
+                    <button type="button" aria-label={`Move ${project.title} down`} disabled={pIdx===data.projects.length-1} className="p-2 disabled:opacity-30" onClick={()=>saveData(reorderProject(data,project.id,1))}>↓</button>
                     <button
                       type="button"
                       onClick={() => {
@@ -652,20 +631,21 @@ export default function EditDrawer() {
                         }
                       }}
                       className="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-500/10 transition-colors"
-                      title="Delete project"
+                      aria-label={`Delete ${project.title}`} title="Delete project"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
+                    </div>
                   </div>
 
                   {/* Project Image Upload */}
                   <div className="flex items-center gap-3">
                     <div className="relative w-24 h-14 rounded-lg overflow-hidden bg-slate-900 border border-slate-700 shrink-0">
                       <Image
-                        src={project.image}
+                        src={imageUrl(project.image,true)}
                         alt={project.title}
                         fill
-                        unoptimized={project.image.startsWith('data:')}
+                        unoptimized={project.image.startsWith('/api/assets/')}
                         className="object-cover"
                       />
                     </div>
@@ -678,7 +658,8 @@ export default function EditDrawer() {
                           className="hidden"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
-                            if (file) handleProjectImageUpload(project.id, file);
+                            if (file) void handleProjectImageUpload(project.id, file);
+                            e.target.value='';
                           }}
                         />
                       </label>
@@ -694,7 +675,7 @@ export default function EditDrawer() {
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Title
-                      </label>
+
                       <input
                         type="text"
                         value={project.title}
@@ -705,13 +686,13 @@ export default function EditDrawer() {
                           saveData({ ...data, projects: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                      />
+                      /></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Category
-                      </label>
+
                       <select
                         value={project.category}
                         onChange={(e) => {
@@ -727,13 +708,13 @@ export default function EditDrawer() {
                         <option value="AI & Computer Vision">AI & Computer Vision</option>
                         <option value="Machine Learning">Machine Learning</option>
                         <option value="Data Analytics & Viz">Data Analytics & Viz</option>
-                      </select>
+                      </select></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Tech Tags (comma separated)
-                      </label>
+
                       <input
                         type="text"
                         value={project.tags.join(', ')}
@@ -745,13 +726,13 @@ export default function EditDrawer() {
                           saveData({ ...data, projects: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                      />
+                      /></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         GitHub URL (use # for placeholder)
-                      </label>
+
                       <input
                         type="text"
                         value={project.githubUrl}
@@ -762,13 +743,13 @@ export default function EditDrawer() {
                           saveData({ ...data, projects: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white font-mono"
-                      />
+                      /></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Demo URL (use # for placeholder)
-                      </label>
+
                       <input
                         type="text"
                         value={project.demoUrl}
@@ -779,13 +760,13 @@ export default function EditDrawer() {
                           saveData({ ...data, projects: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white font-mono"
-                      />
+                      /></label>
                     </div>
 
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Description
-                      </label>
+
                       <textarea
                         rows={3}
                         value={project.description}
@@ -796,9 +777,14 @@ export default function EditDrawer() {
                           saveData({ ...data, projects: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white resize-none"
-                      />
+                      /></label>
                     </div>
                   </div>
+                  <details className="space-y-3"><summary className="text-xs font-semibold cursor-pointer">Additional project details</summary>
+                    {(['summary','slug','liveDemoUrl'] as const).map(field=><label key={field} className="block text-xs">{field==='liveDemoUrl'?'Live demo URL':field==='summary'?'Card summary':'Project slug'}<input className="w-full p-3 rounded-xl bg-white dark:bg-slate-800" value={project[field]||''} onChange={e=>saveData({...data,projects:data.projects.map(item=>item.id===project.id?{...item,[field]:e.target.value}:item)})}/></label>)}
+                    <label className="block text-xs">Highlights (one per line)<textarea className="w-full p-3 rounded-xl bg-white dark:bg-slate-800" value={project.highlights.join('\n')} onChange={e=>saveData({...data,projects:data.projects.map(item=>item.id===project.id?{...item,highlights:e.target.value.split('\n')}:item)})}/></label>
+                    <label className="block text-xs"><input type="checkbox" checked={project.featured} onChange={e=>saveData({...data,projects:data.projects.map(item=>item.id===project.id?{...item,featured:e.target.checked}:item)})}/> Featured project</label>
+                  </details>
                 </div>
               ))}
             </div>
@@ -857,7 +843,7 @@ export default function EditDrawer() {
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Role
-                      </label>
+
                       <input
                         type="text"
                         value={exp.role}
@@ -868,13 +854,13 @@ export default function EditDrawer() {
                           saveData({ ...data, experience: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                      />
+                      /></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Company / Institute
-                      </label>
+
                       <input
                         type="text"
                         value={exp.company}
@@ -885,13 +871,13 @@ export default function EditDrawer() {
                           saveData({ ...data, experience: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                      />
+                      /></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Dates / Period
-                      </label>
+
                       <input
                         type="text"
                         value={exp.period}
@@ -902,13 +888,13 @@ export default function EditDrawer() {
                           saveData({ ...data, experience: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                      />
+                      /></label>
                     </div>
 
                     <div>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Technologies (comma separated)
-                      </label>
+
                       <input
                         type="text"
                         value={exp.technologies.join(', ')}
@@ -920,13 +906,13 @@ export default function EditDrawer() {
                           saveData({ ...data, experience: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                      />
+                      /></label>
                     </div>
 
                     <div className="sm:col-span-2">
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                         Accomplishment Bullets (one per line)
-                      </label>
+
                       <textarea
                         rows={3}
                         value={exp.description.join('\n')}
@@ -938,7 +924,7 @@ export default function EditDrawer() {
                           saveData({ ...data, experience: updated });
                         }}
                         className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white resize-none"
-                      />
+                      /></label>
                     </div>
                   </div>
                 </div>
@@ -967,7 +953,7 @@ export default function EditDrawer() {
                       <div>
                         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                           Degree
-                        </label>
+
                         <input
                           type="text"
                           value={edu.degree}
@@ -978,13 +964,13 @@ export default function EditDrawer() {
                             saveData({ ...data, education: updated });
                           }}
                           className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                        />
+                        /></label>
                       </div>
 
                       <div>
                         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                           Institution
-                        </label>
+
                         <input
                           type="text"
                           value={edu.institution}
@@ -995,13 +981,13 @@ export default function EditDrawer() {
                             saveData({ ...data, education: updated });
                           }}
                           className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                        />
+                        /></label>
                       </div>
 
                       <div>
                         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                           GPA
-                        </label>
+
                         <input
                           type="text"
                           value={edu.gpa}
@@ -1012,13 +998,13 @@ export default function EditDrawer() {
                             saveData({ ...data, education: updated });
                           }}
                           className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                        />
+                        /></label>
                       </div>
 
                       <div>
                         <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                           Period
-                        </label>
+
                         <input
                           type="text"
                           value={edu.period}
@@ -1029,7 +1015,7 @@ export default function EditDrawer() {
                             saveData({ ...data, education: updated });
                           }}
                           className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                        />
+                        /></label>
                       </div>
                     </div>
                   </div>
@@ -1090,7 +1076,7 @@ export default function EditDrawer() {
                         <div>
                           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                             Certificate Title
-                          </label>
+
                           <input
                             type="text"
                             value={cert.title}
@@ -1101,13 +1087,13 @@ export default function EditDrawer() {
                               saveData({ ...data, certifications: updated });
                             }}
                             className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                          />
+                          /></label>
                         </div>
 
                         <div>
                           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                             Issuer
-                          </label>
+
                           <input
                             type="text"
                             value={cert.issuer}
@@ -1118,13 +1104,13 @@ export default function EditDrawer() {
                               saveData({ ...data, certifications: updated });
                             }}
                             className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                          />
+                          /></label>
                         </div>
 
                         <div>
                           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                             Year / Date
-                          </label>
+
                           <input
                             type="text"
                             value={cert.date}
@@ -1135,13 +1121,13 @@ export default function EditDrawer() {
                               saveData({ ...data, certifications: updated });
                             }}
                             className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                          />
+                          /></label>
                         </div>
 
                         <div>
                           <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                             Skills Learned (comma separated)
-                          </label>
+
                           <input
                             type="text"
                             value={cert.skillsLearned.join(', ')}
@@ -1153,7 +1139,7 @@ export default function EditDrawer() {
                               saveData({ ...data, certifications: updated });
                             }}
                             className="w-full px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs sm:text-sm text-slate-900 dark:text-white"
-                          />
+                          /></label>
                         </div>
                       </div>
                     </div>
@@ -1162,7 +1148,7 @@ export default function EditDrawer() {
               </div>
             </div>
           )}
-        </div>
+        </fieldset>
       </motion.div>
     </div>
   );

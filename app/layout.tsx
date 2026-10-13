@@ -3,7 +3,10 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { PortfolioProvider } from '@/components/PortfolioContext';
-import { portfolioData } from '@/data/portfolio';
+import { getPublicContent } from '@/lib/cms/public-content';
+import { portfolioMetadata } from '@/lib/cms/metadata';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,63 +23,16 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://ilyas-ahmad.vercel.app'),
-  title: `${portfolioData.profile.name} — ${portfolioData.profile.headline}`,
-  description: portfolioData.profile.summary,
-  keywords: [
-    portfolioData.profile.name,
-    'Data Scientist',
-    'Data Analyst',
-    'Machine Learning Engineer',
-    'Computer Vision',
-    'Deep Learning',
-    'YOLO',
-    'Vision Transformers',
-    'Python',
-    'SQL',
-    'Power BI',
-    'Tableau',
-    'UET Peshawar',
-    'Portfolio',
-  ],
-  authors: [{ name: portfolioData.profile.name }],
-  creator: portfolioData.profile.name,
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    title: `${portfolioData.profile.name} — ${portfolioData.profile.headline}`,
-    description: portfolioData.profile.summary,
-    siteName: `${portfolioData.profile.name} Portfolio`,
-    images: [
-      {
-        url: portfolioData.profile.profileImage,
-        width: 600,
-        height: 600,
-        alt: `${portfolioData.profile.name} - Profile Photo`,
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${portfolioData.profile.name} — ${portfolioData.profile.headline}`,
-    description: portfolioData.profile.summary,
-    images: [portfolioData.profile.profileImage],
-  },
-  icons: {
-    icon: '/favicon.ico',
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return portfolioMetadata((await getPublicContent()).content);
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const published = await getPublicContent();
   return (
     <html lang="en" className="dark scroll-smooth" suppressHydrationWarning>
       <head>
@@ -99,7 +55,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased min-h-screen selection:bg-cyan-500/20 selection:text-cyan-400`}>
         <ThemeProvider>
-          <PortfolioProvider>{children}</PortfolioProvider>
+          <PortfolioProvider initialPublished={published}>{children}</PortfolioProvider>
         </ThemeProvider>
       </body>
     </html>

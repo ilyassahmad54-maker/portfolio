@@ -1,0 +1,52 @@
+[
+  {
+    "path": "/assets/imported-00056d38ceff75e6c25a.png",
+    "sha256": "00056d38ceff75e6c25ae5e804d93ae2adbbed7b376a3668301a2c989aea7d80",
+    "bytes": 2054433
+  },
+  {
+    "path": "/assets/projects/customer-segmentation.jpg",
+    "sha256": "91d9cddaacbe4fdcf871e4be2f17587c0c71f4d520ced07cbc81b7f036d1afe2",
+    "bytes": 39309
+  },
+  {
+    "path": "/assets/projects/diabetes-care.jpg",
+    "sha256": "52b8d96475198ccb4a46753174ef8c39c716c9d61a2d3936dff37a9a2d480866",
+    "bytes": 38877
+  },
+  {
+    "path": "/assets/projects/heart-disease-prediction.jpg",
+    "sha256": "35d63b230e78e165163c510129517aeabf1538ce1836119b79bea2cce42368e0",
+    "bytes": 42143
+  },
+  {
+    "path": "/assets/projects/helmet-detection.jpg",
+    "sha256": "3e555ebe78d047eff806434b85c19408ac8f17f3365c03f1195e37a40e90d8ab",
+    "bytes": 45215
+  },
+  {
+    "path": "/assets/projects/multimodal-ai.jpg",
+    "sha256": "0c01413d2b504942c63aaf5f1de74003daa68be6f35fc985d40277c322087127",
+    "bytes": 38339
+  },
+  {
+    "path": "/assets/projects/student-ai-dashboard.jpg",
+    "sha256": "89d34378786c9cc7af4335212612b099980a670500c70ec7b0105de1bf8396c6",
+    "bytes": 48570
+  },
+  {
+    "path": "/assets/riskradar-6b4d1ab9f5bdadbcf9ae.jpg",
+    "sha256": "6b4d1ab9f5bdadbcf9ae70a7c2b7c080e685fefb4e7794121f608cbb37ff9503",
+    "bytes": 32239
+  },
+  {
+    "path": "/assets/unemployment-c3db711db38ef2016395.png",
+    "sha256": "c3db711db38ef2016395ca8419b3f02dc91eddf82ac72f49558f6df2952a8bc7",
+    "bytes": 1176416
+  },
+  {
+    "path": "/cv.pdf",
+    "sha256": "b4d2496876eb97d9b270e84e3aaeb6f2de685b12bbe1ad8c376c13129234b300",
+    "bytes": 110501
+  }
+]

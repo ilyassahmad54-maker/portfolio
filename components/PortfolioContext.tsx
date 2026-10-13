@@ -1,243 +1,58 @@
 'use client';
+import React, { createContext, useContext, useEffect, useState, useSyncExternalStore, useCallback } from 'react';
+import type { PortfolioData } from '@/types/portfolio';
+import type { PublicContent } from '@/lib/cms/public-content';
+import { PortfolioEditor } from '@/lib/cms/editor';
+import { imageSource } from '@/lib/cms/legacy';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { PortfolioData, Profile, ProjectItem, SkillCategory, ExperienceItem, EducationItem, CertificationItem } from '@/types/portfolio';
-import { portfolioData as initialPortfolioData } from '@/data/portfolio';
-
-const LOCAL_STORAGE_KEY = 'portfolio_custom_data';
-function backupDraft() {
-  const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-  if (stored) localStorage.setItem(`${LOCAL_STORAGE_KEY}_backup_${Date.now()}`, stored);
+export function downloadJSON(text:string,name:string){
+  const url=URL.createObjectURL(new Blob([text],{type:'application/json'}));
+  const link=document.createElement('a');link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-
-async function authorized(): Promise<boolean> {
-  try {
-    const response = await fetch('/api/admin/session', { cache: 'no-store' });
-    return response.ok;
-  } catch { return false; }
-}
-
 interface PortfolioContextType {
-  data: PortfolioData;
-  isCustomized: boolean;
-  isUnlocked: boolean;
-  isLockOpen: boolean;
-  isEditOpen: boolean;
-  toastMessage: string | null;
-  setIsLockOpen: (open: boolean) => void;
-  setIsEditOpen: (open: boolean) => void;
-  openEditMode: () => void;
-  unlockWithPasscode: (passcode: string) => Promise<boolean>;
-  lockSession: () => void;
-  saveData: (newData: PortfolioData) => void;
-  resetToDefault: () => void;
-  exportData: () => void;
-  importData: (jsonString: string) => boolean;
-  showToast: (msg: string) => void;
+  data:PortfolioData; editorData:PortfolioData; model:PortfolioEditor; cms:ReturnType<PortfolioEditor['snapshot']>;
+  isCustomized:boolean; isUnlocked:boolean; isLockOpen:boolean; isEditOpen:boolean; toastMessage:string|null;
+  setIsLockOpen:(open:boolean)=>void; setIsEditOpen:(open:boolean)=>void; openEditMode:()=>Promise<void>;
+  unlockWithPasscode:(passcode:string)=>Promise<boolean>; lockSession:()=>Promise<void>;
+  saveData:(data:PortfolioData)=>void; resetToDefault:()=>Promise<boolean>; exportData:()=>void; importData:(raw:string)=>boolean;
+  showToast:(message:string)=>void; imageUrl:(reference:string,editor?:boolean)=>string;
 }
-
-const PortfolioContext = createContext<PortfolioContextType | undefined>(undefined);
-
-export function PortfolioProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<PortfolioData>(initialPortfolioData);
-  const [isCustomized, setIsCustomized] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
-  const [isLockOpen, setIsLockOpen] = useState(false);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  // Stored drafts are previewed only by an authenticated admin. Never rewrite on load.
-  const loadDraft = useCallback(() => {
-    try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        delete parsed.adminPasscode;
-        // Deep-merge with initialPortfolioData so missing keys don't crash
-        setData({
-          ...initialPortfolioData,
-          ...parsed,
-          profile: { ...initialPortfolioData.profile, ...(parsed.profile || {}) },
-          projects: parsed.projects || initialPortfolioData.projects,
-          skills: parsed.skills || initialPortfolioData.skills,
-          experience: parsed.experience || initialPortfolioData.experience,
-          education: parsed.education || initialPortfolioData.education,
-          certifications: parsed.certifications || initialPortfolioData.certifications,
-        });
-        setIsCustomized(true);
-      }
-    } catch (err) {
-      console.warn('Could not load custom portfolio data from localStorage:', err);
-    }
-
-  }, []);
-
-  useEffect(() => {
-    void authorized().then(valid => {
-      setIsUnlocked(valid);
-      if (valid) loadDraft();
-    });
-  }, [loadDraft]);
-
-  const showToast = useCallback((msg: string) => {
-    setToastMessage(msg);
-  }, []);
-
-  // Autosave and update data state
-  const saveData = useCallback(async (newData: PortfolioData) => {
-    if (!(await authorized())) { setIsUnlocked(false); setIsEditOpen(false); return; }
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(newData));
-      setData(newData);
-      setIsCustomized(true);
-    } catch (err) {
-      console.error('Failed to save portfolio data to localStorage:', err);
-      showToast('Draft could not be saved. Browser storage may be full.');
-    }
-  }, [showToast]);
-
-  // Reset browser-local drafts to initial file defaults
-  const resetToDefault = useCallback(async () => {
-    if (!(await authorized())) { setIsUnlocked(false); setIsEditOpen(false); return; }
-    try {
-      backupDraft();
-      localStorage.removeItem(LOCAL_STORAGE_KEY);
-    } catch (err) {
-      showToast('Reset cancelled: could not back up your draft.');
-      return;
-    }
-    setData(initialPortfolioData);
-    setIsCustomized(false);
-    showToast('Reset all data to default codebase settings.');
-  }, [showToast]);
-
-  const unlockWithPasscode = useCallback(async (passcode: string): Promise<boolean> => {
-    try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ passcode }),
-      });
-      if (!response.ok) return false;
-      loadDraft();
-      setIsUnlocked(true); setIsLockOpen(false); setIsEditOpen(true);
-      return true;
-    } catch { return false; }
-  }, [loadDraft]);
-
-  const lockSession = useCallback(async () => {
-    try {
-      const response = await fetch('/api/admin/logout', { method: 'POST' });
-      if (!response.ok) throw new Error('Logout failed');
-      setIsUnlocked(false); setIsEditOpen(false); setIsLockOpen(false);
-      setData(initialPortfolioData); setIsCustomized(false);
-      showToast('Logged out. Draft preserved; showing published content.');
-    } catch { showToast('Logout failed. Please try again.'); }
-  }, [showToast]);
-
-  const openEditMode = useCallback(async () => {
-    const valid = await authorized();
-    if (valid) loadDraft();
-    setIsUnlocked(valid);
-    setIsEditOpen(valid);
-    setIsLockOpen(!valid);
-  }, [loadDraft]);
-
-  // Export data as data.json
-  const exportData = useCallback(() => {
-    try {
-      const jsonStr = JSON.stringify(data, null, 2);
-      const blob = new Blob([jsonStr], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'data.json';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      showToast('Exported data.json successfully!');
-    } catch (err) {
-      console.error('Failed to export data:', err);
-    }
-  }, [data, showToast]);
-
-  // Import data from JSON string
-  const importData = useCallback(
-    (jsonString: string): boolean => {
-      try {
-        const parsed = JSON.parse(jsonString);
-        delete parsed.adminPasscode;
-        if (!parsed.profile || !parsed.projects) {
-          showToast('Invalid data.json schema.');
-          return false;
-        }
-        const merged: PortfolioData = {
-          ...initialPortfolioData,
-          ...parsed,
-          profile: { ...initialPortfolioData.profile, ...parsed.profile },
-          projects: parsed.projects || initialPortfolioData.projects,
-          skills: parsed.skills || initialPortfolioData.skills,
-          experience: parsed.experience || initialPortfolioData.experience,
-          education: parsed.education || initialPortfolioData.education,
-          certifications: parsed.certifications || initialPortfolioData.certifications,
-        };
-        try { backupDraft(); } catch {
-          showToast('Import cancelled: could not back up your draft.');
-          return false;
-        }
-        saveData(merged);
-        showToast('Imported data successfully!');
-        return true;
-      } catch (err) {
-        showToast('Failed to parse imported JSON file.');
-        return false;
-      }
-    },
-    [saveData, showToast]
-  );
-
-  // Global keyboard shortcut: Ctrl+Shift+E (or Cmd+Shift+E)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'E' || e.key === 'e')) {
-        e.preventDefault();
-        openEditMode();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [openEditMode]);
-
-  return (
-    <PortfolioContext.Provider
-      value={{
-        data,
-        isCustomized,
-        isUnlocked,
-        isLockOpen,
-        isEditOpen,
-        toastMessage,
-        setIsLockOpen,
-        setIsEditOpen,
-        openEditMode,
-        unlockWithPasscode,
-        lockSession,
-        saveData,
-        resetToDefault,
-        exportData,
-        importData,
-        showToast,
-      }}
-    >
-      {children}
-    </PortfolioContext.Provider>
-  );
+const PortfolioContext=createContext<PortfolioContextType|undefined>(undefined);
+export function PortfolioProvider({children,initialPublished}:{children:React.ReactNode;initialPublished:PublicContent}){
+  const [model]=useState(()=>new PortfolioEditor(initialPublished));
+  const cms=useSyncExternalStore(model.subscribe,model.snapshot,model.snapshot);
+  const [isLockOpen,setIsLockOpen]=useState(false),[isEditOpen,setIsEditOpen]=useState(false),[toastMessage,showToast]=useState<string|null>(null);
+  useEffect(()=>{model.acceptPublic(initialPublished);},[initialPublished,model]);
+  const detectLegacy=useCallback(()=>{try{model.setLegacy(localStorage.getItem('portfolio_custom_data'));}catch{/* Browser storage may be disabled. */}},[model]);
+  useEffect(()=>{void model.checkSession().then(valid=>{if(valid)detectLegacy();});},[model,detectLegacy]);
+  useEffect(()=>{
+    let pending=false;
+    const refresh=async()=>{if(pending||document.visibilityState==='hidden'||model.snapshot().busy)return;pending=true;try{await model.refreshPublic();if(model.snapshot().authenticated)await model.checkSession();}finally{pending=false;}};
+    const timer=setInterval(()=>void refresh(),60000);window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',refresh);
+    return()=>{clearInterval(timer);window.removeEventListener('focus',refresh);document.removeEventListener('visibilitychange',refresh);};
+  },[model]);
+  useEffect(()=>{
+    const beforeUnload=(event:BeforeUnloadEvent)=>{if(model.dirty||model.snapshot().busy){event.preventDefault();event.returnValue='';}};
+    window.addEventListener('beforeunload',beforeUnload);return()=>window.removeEventListener('beforeunload',beforeUnload);
+  },[model]);
+  const openEditMode=useCallback(async()=>{
+    if(await model.checkSession()){detectLegacy();setIsEditOpen(true);if(!model.snapshot().working)await model.load();}
+    else setIsLockOpen(true);
+  },[model,detectLegacy]);
+  useEffect(()=>{
+    const shortcut=(event:KeyboardEvent)=>{if((event.ctrlKey||event.metaKey)&&event.shiftKey&&event.key.toLowerCase()==='e'){event.preventDefault();void openEditMode();}};
+    window.addEventListener('keydown',shortcut);return()=>window.removeEventListener('keydown',shortcut);
+  },[openEditMode]);
+  const unlockWithPasscode=async(passcode:string)=>{
+    if(!await model.login(passcode))return false;
+    detectLegacy();setIsLockOpen(false);setIsEditOpen(true);if(!model.snapshot().working)await model.load();return true;
+  };
+  const lockSession=async()=>{
+    if((model.dirty||cms.busy)&&!confirm('Log out? Unsaved work stays in memory, but will be lost if you close or reload this page. Export JSON first to back it up.'))return;
+    if(await model.logout()){setIsEditOpen(false);setIsLockOpen(false);}else showToast('Logout failed. Try again.');
+  };
+  const resetToDefault=()=>model.discard(true);
+  const exportData=()=>{downloadJSON(JSON.stringify(cms.working||cms.published.content,null,2),'portfolio-draft.json');showToast('JSON backup download requested.');};
+  return <PortfolioContext.Provider value={{data:model.display,editorData:cms.working||cms.published.content,model,cms,isCustomized:cms.authenticated&&(model.dirty||!!cms.saved?.state.hasDraft||cms.view!=='published'),isUnlocked:cms.authenticated,isLockOpen,isEditOpen,toastMessage,setIsLockOpen,setIsEditOpen,openEditMode,unlockWithPasscode,lockSession,saveData:model.edit,resetToDefault,exportData,importData:model.compare,showToast,imageUrl:(reference,editor=false)=>imageSource(reference,cms.authenticated&&(editor||cms.view!=='published'))}}>{children}</PortfolioContext.Provider>;
 }
-
-export function usePortfolio() {
-  const ctx = useContext(PortfolioContext);
-  if (!ctx) {
-    throw new Error('usePortfolio must be used within a PortfolioProvider');
-  }
-  return ctx;
-}
+export function usePortfolio(){const value=useContext(PortfolioContext);if(!value)throw new Error('PortfolioProvider is required');return value;}

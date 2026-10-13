@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+import Image from './PortfolioImage';
 import { motion } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import {
@@ -19,7 +19,7 @@ import {
 import { usePortfolio } from './PortfolioContext';
 
 export default function Hero() {
-  const { data } = usePortfolio();
+  const { data, imageUrl } = usePortfolio();
   const { profile, socialLinks } = data;
 
   // Build typing sequence for react-type-animation
@@ -222,11 +222,11 @@ export default function Hero() {
               <div className="relative w-full h-full rounded-3xl p-2 bg-gradient-to-tr from-cyan-500/20 via-slate-200/50 to-violet-500/20 dark:from-cyan-500/30 dark:via-slate-800/60 dark:to-violet-500/30 backdrop-blur-md shadow-2xl border border-slate-200/60 dark:border-slate-700/60 overflow-hidden group">
                 <div className="relative w-full h-full rounded-2xl overflow-hidden bg-slate-900">
                   <Image
-                    src={profile.profileImage}
+                    src={imageUrl(profile.profileImage)}
                     alt={profile.name}
                     fill
                     priority
-                    unoptimized={profile.profileImage.startsWith('data:')}
+                    unoptimized={profile.profileImage.startsWith('/api/assets/')}
                     sizes="(max-width: 768px) 320px, 400px"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />

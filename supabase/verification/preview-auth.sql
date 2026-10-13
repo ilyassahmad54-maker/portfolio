@@ -1,0 +1,9 @@
+-- Read-only audit using the restricted actual Preview runtime identity.
+SELECT jsonb_build_object(
+ 'tablesProtected',(SELECT count(*)=2 AND bool_and(c.relrowsecurity AND c.relforcerowsecurity) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='preview_auth' AND c.relkind='r'),
+ 'noDirectAccess',NOT EXISTS(SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='preview_auth' AND c.relkind='r' AND (has_table_privilege(current_user,c.oid,'SELECT') OR has_table_privilege(current_user,c.oid,'INSERT') OR has_table_privilege(current_user,c.oid,'UPDATE') OR has_table_privilege(current_user,c.oid,'DELETE') OR has_table_privilege(current_user,c.oid,'TRUNCATE'))),
+ 'functionsExact',(SELECT count(*)=4 AND bool_and(p.oid=ANY(ARRAY['preview_auth.create_session(text,text)'::regprocedure,'preview_auth.read_session(text)'::regprocedure,'preview_auth.revoke_session(text)'::regprocedure,'preview_auth.consume_rate(text,text,text)'::regprocedure])) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='preview_auth' AND has_function_privilege(current_user,p.oid,'EXECUTE')),
+ 'noSchemaCreate',NOT has_schema_privilege(current_user,'preview_auth','CREATE'),
+ 'noClientAccess',NOT has_schema_privilege('anon','preview_auth','USAGE') AND NOT has_schema_privilege('authenticated','preview_auth','USAGE') AND NOT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='preview_auth' AND (has_function_privilege('anon',p.oid,'EXECUTE') OR has_function_privilege('authenticated',p.oid,'EXECUTE'))),
+ 'ownersRestricted',NOT EXISTS(SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace JOIN pg_roles r ON r.oid=p.proowner WHERE n.nspname='preview_auth' AND (r.rolname<>'portfolio_preview_auth_owner' OR r.rolsuper OR r.rolbypassrls OR NOT ('search_path=pg_catalog, pg_temp'=ANY(p.proconfig))))
+) AS result;

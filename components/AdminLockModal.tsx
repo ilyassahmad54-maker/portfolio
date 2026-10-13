@@ -49,7 +49,7 @@ export default function AdminLockModal() {
   return (
     <AnimatePresence>
       {isLockOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4">
           {/* Dark Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
@@ -94,7 +94,7 @@ export default function AdminLockModal() {
                 Admin Edit Mode
               </h3>
               <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-                Enter your administrative passcode to unlock live site editing.
+                Enter your administrative passcode to unlock draft editing and publication.
               </p>
             </div>
 

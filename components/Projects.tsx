@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+import Image from './PortfolioImage';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Github,
@@ -24,7 +24,7 @@ const categories = [
 type Category = (typeof categories)[number];
 
 export default function Projects() {
-  const { data, showToast } = usePortfolio();
+  const { data, showToast, imageUrl } = usePortfolio();
   const { projects } = data;
   const [activeCategory, setActiveCategory] = useState<Category>('All');
 
@@ -88,10 +88,10 @@ export default function Projects() {
                   {/* Project Image Container */}
                   <div className="relative w-full h-52 overflow-hidden bg-slate-900">
                     <Image
-                      src={project.image}
+                      src={imageUrl(project.image)}
                       alt={project.title}
                       fill
-                      unoptimized={project.image.startsWith('data:')}
+                      unoptimized={project.image.startsWith('/api/assets/')}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     />
