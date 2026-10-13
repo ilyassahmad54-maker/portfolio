@@ -58,7 +58,17 @@ export function createCmsQuery(factory: typeof postgres = postgres, uriProvider 
       }, deadlineMs);
     });
     try { return await Promise.race([work(), deadline]); }
-    catch (error) { throw error instanceof CmsUnavailable ? error : safeDatabaseError(error); }
+    catch (error) {
+      const failure = error instanceof CmsUnavailable ? error : safeDatabaseError(error);
+      // A failed upstream connection/authentication can leave a warm serverless
+      // pool unusable. Fail this request, then let the next request reconnect.
+      // Never retry a mutation automatically or recycle on ordinary conflicts.
+      if (failure instanceof CmsUnavailable && failure.category !== 'configuration' && !expired && client === database) {
+        client = undefined;
+        void database.end({ timeout: 0 }).catch(() => {});
+      }
+      throw failure;
+    }
     finally { if (timer) clearTimeout(timer); }
   };
 }

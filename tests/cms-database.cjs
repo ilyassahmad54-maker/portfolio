@@ -57,3 +57,15 @@ test('deadline closes an in-flight pool and a later retry gets a fresh client',a
   await assert.rejects(query('SELECT cms.publish_draft(1,NULL,NULL) AS result'),e=>e instanceof CmsUnavailable&&e.category==='database_timeout');
   assert.equal(ended,1);assert.equal(await query('SELECT cms.read_state() AS result'),'retry-result');assert.equal(created,2);assert.equal(released,2);
 });
+
+test('an upstream connection failure fails closed and the next request reconnects without replaying the failed operation',async()=>{
+  let created=0,ended=0,contentCalls=0;
+  const query=createCmsQuery(()=>{const number=++created;return {
+    reserve:async()=>{if(number===1)throw {code:'08006',message:'private upstream details'};return {
+      unsafe:async sql=>{if(sql.includes('FROM pg_roles'))return [{allowed:true}];contentCalls++;return [{result:'recovered'}];},release:()=>{}};},
+    end:async()=>{ended++;},
+  };},()=>uri);
+  await assert.rejects(query('SELECT cms.publish_draft(1,NULL,NULL) AS result'),e=>e instanceof CmsUnavailable&&e.category==='database');
+  assert.equal(contentCalls,0);assert.equal(ended,1);
+  assert.equal(await query('SELECT cms.read_state() AS result'),'recovered');assert.equal(created,2);assert.equal(contentCalls,1);
+});
