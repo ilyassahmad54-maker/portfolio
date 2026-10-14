@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-14T17:38:45.098Z",
+  "httpStatus": 401,
+  "unknownSessionRejected": true,
+  "source": "Existing Production session GET; reviewed handler reads Redis only for a valid-shaped unknown token",
+  "requests": 1,
+  "redisWrites": 0,
+  "credentialsChanged": false,
+  "limitation": "Does not prove new CMS multi-key EVAL, SET or DEL behavior; isolated/staged live Redis write tests remain required"
+}

@@ -1,0 +1,14 @@
+{
+  "createdAt": "2026-10-14T18:25:52.993Z",
+  "encryptedDirectory": "/Users/mac/Desktop/portfolio-cms-backups/portfolio-cms-plan-pD0ZW9/offdevice-encrypted-20261014",
+  "recoveryKeyDirectory": "/Users/mac/Desktop/portfolio-cms-backups/portfolio-cms-plan-pD0ZW9/offdevice-recovery-20261014",
+  "algorithm": "AES-256-GCM",
+  "encryptedBytes": 11130916,
+  "sha256": "7fb3e28cf4e7f3d1ccf48a04e1890cfcddd829df2e3d55506b6463e57c485b0d",
+  "sourceFilesVerified": 34,
+  "decryptRoundTripPassed": true,
+  "wrongKeyRejected": true,
+  "offDeviceTransferCompleted": true,
+  "offDeviceTransferEvidence": "User confirmed off-Mac copy and separate recovery key; destination copy not independently accessed",
+  "ownerConfirmedAt": "2026-10-14T18:35:47.046692+00:00"
+}

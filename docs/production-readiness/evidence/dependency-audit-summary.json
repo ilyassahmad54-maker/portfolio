@@ -1,0 +1,21 @@
+{
+  "auditedDate": "2026-10-14",
+  "fullAudit": {
+    "high": 7,
+    "critical": 0,
+    "packages": [
+      "@next/eslint-plugin-next",
+      "braces",
+      "chokidar",
+      "eslint-config-next",
+      "fast-glob",
+      "micromatch",
+      "tailwindcss"
+    ]
+  },
+  "runtimeAudit": {
+    "total": 0
+  },
+  "underlyingAdvisory": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+  "action": "Reviewed remediation or explicit build-pipeline risk acceptance before launch; no dependency changes performed"
+}

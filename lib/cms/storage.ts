@@ -15,14 +15,16 @@ export function createStorage(fetcher: typeof fetch = fetch, configuration = () 
     const {url,key}=configuration();
     if (!url || !/^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) || !key || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{64}\.(jpg|png|webp)$/.test(path)) throw new CmsUnavailable('configuration');
     try {
-      const bucket=await fetcher(`${url}/storage/v1/bucket/portfolio-images`,{headers:{apikey:key,Authorization:`Bearer ${key}`},signal:AbortSignal.timeout(8000),redirect:'error',cache:'no-store'});
+      // Modern secret keys are opaque API keys, not JWT bearer tokens.
+      const credentials: Record<string,string> = key.startsWith('sb_secret_') ? {apikey:key} : {apikey:key,Authorization:`Bearer ${key}`};
+      const bucket=await fetcher(`${url}/storage/v1/bucket/portfolio-images`,{headers:credentials,signal:AbortSignal.timeout(8000),redirect:'error',cache:'no-store'});
       if(!bucket.ok) { void bucket.body?.cancel(); throw new Error(); }
       // Bound administrative metadata too; never trust a configured bucket to be private.
       const text=(await boundedResponse(bucket,16384)).toString('utf8');
       const config=JSON.parse(text);
       if(config.id!=='portfolio-images' || config.public!==false || config.file_size_limit!==MAX_IMAGE_BYTES || !Array.isArray(config.allowed_mime_types) || config.allowed_mime_types.length!==3 || !['image/jpeg','image/png','image/webp'].every(type=>config.allowed_mime_types.includes(type)))throw new Error();
       const res=await fetcher(`${url}/storage/v1/object/${bytes ? '' : 'authenticated/'}portfolio-images/${path}`, {
-        method: bytes ? 'POST' : 'GET', headers: { apikey:key, Authorization:`Bearer ${key}`, ...(bytes ? {'Content-Type':mime!, 'x-upsert':'false'} : {}) },
+        method: bytes ? 'POST' : 'GET', headers: { ...credentials, ...(bytes ? {'Content-Type':mime!, 'x-upsert':'false'} : {}) },
         ...(bytes ? { body:new Uint8Array(bytes) } : {}), signal:AbortSignal.timeout(8000), redirect:'error', cache:'no-store',
       });
       if (!res.ok) { void res.body?.cancel(); throw new Error(); }

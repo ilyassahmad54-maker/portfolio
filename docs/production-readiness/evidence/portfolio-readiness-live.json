@@ -1,0 +1,22 @@
+{
+  "auditedAt": "2026-10-14T16:17:53.770Z",
+  "deployment": {
+    "id": "dpl_HvpMgxXFVxytzAjWtbTJ1MRK1zQ7",
+    "url": "https://portfolio-isdejr326-ilyassahmad54-maker.vercel.app",
+    "status": "READY",
+    "target": null,
+    "commit": "5bb2c7deb3c6163e5db48eb208b5d2169c841f70",
+    "expectedCommit": "5bb2c7deb3c6163e5db48eb208b5d2169c841f70",
+    "matches": true,
+    "branch": "feature/supabase-portfolio-cms",
+    "regions": [
+      "icn1"
+    ]
+  },
+  "buildLog": {
+    "events": 94,
+    "warningOrErrorLines": 0,
+    "classification": []
+  },
+  "existingTestAccessAvailable": false
+}

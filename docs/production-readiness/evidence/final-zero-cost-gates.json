@@ -1,0 +1,25 @@
+{
+  "checkedAt": "2026-10-14T18:30:19.915511+00:00",
+  "result": "preparation-passed-release-gated",
+  "publishedProjects": 9,
+  "sequence": 24,
+  "storageObjects": 14,
+  "currentObjectsExactlyMatchEncryptedBackup": true,
+  "encryptedBackupRecoveryUtilityPassed": true,
+  "imageAndAuthenticationTests": 26,
+  "credentialsScanPassed": true,
+  "hostedMutations": 0,
+  "billingIndependentlyConfirmed": false,
+  "offDeviceTransferConfirmed": true,
+  "pendingHostedGates": [
+    "SSL enforcement and exact TLS verification",
+    "Production credential provisioning and Preview revocation",
+    "new Storage key access and obsolete legacy-key denial",
+    "Production-only environment setup and exact staged Redis/CMS smoke",
+    "post-stage rollback eligibility"
+  ],
+  "ownerConfirmedNoAdditionalPaidSubscriptions": true,
+  "billingEvidence": "User checked Supabase and Upstash billing; no additional paid subscriptions required",
+  "releaseExecutionApproved": false,
+  "decision": "GO for approval-gated execution; public promotion requires all hosted gates"
+}

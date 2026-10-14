@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-14T19:00:30.672Z",
+  "name": "SUPABASE_SERVICE_ROLE_KEY",
+  "scope": [
+    "production"
+  ],
+  "type": "sensitive",
+  "branch": null,
+  "productionKeyFound": true,
+  "newSecretFormatVerified": null,
+  "privateLocalAccessAvailable": false,
+  "productionOriginalVariablesUnchanged": true,
+  "formatVerification": "Value sealed by Vercel sensitive-variable policy; new-key hosted verification pending"
+}

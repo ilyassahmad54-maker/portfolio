@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-10-14T17:39:59.029Z",
+  "latestPublishedRevision": "9d1c6846-4d59-42ef-8d16-587dbad47cd7",
+  "sequence": 24,
+  "stateVersion": 27,
+  "projectCount": 9,
+  "contentSha256": "134b502f8bce38446cebdb5710011e28d1ecafe50cddaab0b4bc4afa3e2f46b1",
+  "hasDraft": false,
+  "allContentRestoredExactly": true,
+  "hostedPermissionGates": {
+    "preview-runtime": 9,
+    "preview-auth": 6
+  },
+  "projects": [
+    {
+      "order": 1,
+      "id": "proj-2c4ca722-0fa9-4c6f-b318-67a52ab25a19",
+      "title": "Climate Change Dashboard",
+      "image": "/api/assets/2998124e-9543-4a97-b48f-f756c8daeb14"
+    },
+    {
+      "order": 2,
+      "id": "proj-1791656404798",
+      "title": "Unemployment Data Analysis Dashboard",
+      "image": "/assets/unemployment-c3db711db38ef2016395.png"
+    },
+    {
+      "order": 3,
+      "id": "proj-1791623262968",
+      "title": "RiskRadar \u2013 AI-Powered Workplace Hazard Detection & Safety Management System",
+      "image": "/assets/riskradar-6b4d1ab9f5bdadbcf9ae.jpg"
+    },
+    {
+      "order": 4,
+      "id": "proj-multimodal-ai",
+      "title": "Multimodal AI Pipeline",
+      "image": "/api/assets/0bfdbee9-bceb-46b7-885d-cb114195b849"
+    },
+    {
+      "order": 5,
+      "id": "proj-helmet-detection",
+      "title": "Real-time Helmet Detection (YOLO)",
+      "image": "/assets/projects/helmet-detection.jpg"
+    },
+    {
+      "order": 6,
+      "id": "proj-diabetes-care",
+      "title": "DiabetesCare Prediction System",
+      "image": "/assets/projects/diabetes-care.jpg"
+    },
+    {
+      "order": 7,
+      "id": "proj-customer-segmentation",
+      "title": "Customer Segmentation Analysis",
+      "image": "/assets/projects/customer-segmentation.jpg"
+    },
+    {
+      "order": 8,
+      "id": "proj-student-ai-dashboard",
+      "title": "Student AI Usage Analytics Dashboard",
+      "image": "/assets/projects/student-ai-dashboard.jpg"
+    },
+    {
+      "order": 9,
+      "id": "proj-heart-disease-prediction",
+      "title": "Heart Disease Predictive System",
+      "image": "/assets/projects/heart-disease-prediction.jpg"
+    }
+  ],
+  "migrationPackageTemporaryPath": "/private/tmp/portfolio-production-published-ACSicd"
+}

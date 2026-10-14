@@ -1,0 +1,10 @@
+{
+  "checkedAt": "2026-10-14T19:01:11.304Z",
+  "project": "pocnnpfzjxjlyoisnjhp",
+  "endpoint": "existing restricted app transaction pooler",
+  "verifiedClientTls": true,
+  "backendTls": true,
+  "plaintextDenied": true,
+  "plaintextFailureCode": "XX000",
+  "plaintextSslDenial": true
+}

@@ -1,0 +1,5 @@
+{
+  "production-logins.sql": "09e15598145cd39d4a3f25628981f4877cbc647bc4fa81a884568e3d7f1dce57",
+  "seed-approved-baseline.sql": "6d3584329e96c1acacce88e610091bc0bbd694c4cb7a422fa3bb74b118cbb209",
+  "note": "seed-approved-baseline.sql is a retired refusal guard; use private nine-project release package."
+}

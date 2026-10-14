@@ -1,0 +1,21 @@
+{
+  "checkedAt": "2026-10-14T19:06:18.797Z",
+  "identity": "portfolio_cms_production_app",
+  "runtimeAudit": {
+    "noDirectWrites": true,
+    "noSchemaCreate": true,
+    "tablesProtected": true,
+    "noSequenceAccess": true,
+    "noClientSchemaAccess": true,
+    "runtimeFunctionsExact": true,
+    "runtimeMembershipOnly": true,
+    "definerOwnersRestricted": true,
+    "noDatabaseOwnershipOrCreate": true
+  },
+  "publishedProjects": 9,
+  "sequence": 24,
+  "contentHash": "134b502f8bce38446cebdb5710011e28d1ecafe50cddaab0b4bc4afa3e2f46b1",
+  "verifiedClientTls": true,
+  "backendTls": true,
+  "previewCredentialsRevoked": false
+}

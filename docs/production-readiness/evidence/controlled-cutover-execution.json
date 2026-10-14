@@ -1,0 +1,39 @@
+{
+  "checkedAt": "2026-10-14T18:48:56.232594+00:00",
+  "status": "paused-owner-api-key-action-required",
+  "supabaseProject": "pocnnpfzjxjlyoisnjhp",
+  "vercelProject": "prj_8LYUIcb6Kk4uWMYf8AV7PbQUf2bc",
+  "publicDeployment": "dpl_AwGUL8oQZSYUwFSDKy63L6fL4Fb2",
+  "publishedProjects": 9,
+  "publishedSequence": 24,
+  "typecheck": true,
+  "lint": true,
+  "testsPassed": 130,
+  "build": true,
+  "runtimeAdvisories": 0,
+  "sslEnforcementEnabled": true,
+  "tlsGate": {
+    "checkedAt": "2026-10-14T18:43:23.985Z",
+    "project": "pocnnpfzjxjlyoisnjhp",
+    "endpoint": "existing restricted app transaction pooler",
+    "verifiedClientTls": true,
+    "backendTls": true,
+    "plaintextDenied": true,
+    "plaintextFailureCode": "XX000",
+    "plaintextSslDenial": true
+  },
+  "freshPreCutoverArchive": {
+    "path": "/private/tmp/portfolio-zero-cost-backup-LEXq2R/promotion-baseline.dump",
+    "sha256": "3746e21cd71aab224c0fa51b117bdb7dbcba6641252b04b85b3e3f3864b68311"
+  },
+  "billing": "Owner confirmed no additional paid subscriptions; no paid operation requested",
+  "offDeviceBackup": "Owner confirmed; local encrypted archive and key recovery verified again",
+  "productionCredentialsChanged": false,
+  "previewCredentialsRevoked": false,
+  "productionVariablesChanged": false,
+  "gitCommitted": false,
+  "mainMerged": false,
+  "stagedDeploymentCreated": false,
+  "publicPromoted": false,
+  "blocker": "Existing Supabase management credential could not be privately accessed through its specific CLI Keychain store for API-key administration; CLI SSL update succeeded. No alternative credential extraction attempted."
+}

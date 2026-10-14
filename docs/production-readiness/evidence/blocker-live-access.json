@@ -1,0 +1,40 @@
+{
+  "checkedAt": "2026-10-14T18:34:01.071Z",
+  "deployment": {
+    "url": "https://portfolio-isdejr326-ilyassahmad54-maker.vercel.app",
+    "id": "dpl_HvpMgxXFVxytzAjWtbTJ1MRK1zQ7",
+    "status": "READY",
+    "commit": "5bb2c7deb3c6163e5db48eb208b5d2169c841f70",
+    "branch": "feature/supabase-portfolio-cms"
+  },
+  "existingDeploymentTestAccess": false,
+  "redisCredentialScopes": [
+    {
+      "name": "UPSTASH_REDIS_REST_URL",
+      "targets": [
+        "production"
+      ],
+      "branch": null
+    },
+    {
+      "name": "UPSTASH_REDIS_REST_TOKEN",
+      "targets": [
+        "production"
+      ],
+      "branch": null
+    }
+  ],
+  "productionEnvironmentUnchanged": true,
+  "protectedHttpStatus": 302,
+  "logQuery": {
+    "window": "50m",
+    "applicationRecords": 0,
+    "categoryCounts": {},
+    "severityCounts": {
+      "summary": 1
+    },
+    "exit": 0,
+    "records": 1,
+    "knownErrors": []
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "checkedAt": "2026-10-14T19:07:28.060Z",
+  "addedProductionOnlyNames": [
+    "SUPABASE_DATABASE_URL",
+    "SUPABASE_DATABASE_CA",
+    "SUPABASE_URL",
+    "CMS_REQUIRE_DATABASE",
+    "CMS_CACHE_NAMESPACE",
+    "ADMIN_STATE_BACKEND"
+  ],
+  "storageKeyPreserved": true,
+  "originalPasscodeAndUpstashUnchanged": true,
+  "previewFlagsAbsentFromProduction": true,
+  "publicDeploymentUnchanged": true
+}

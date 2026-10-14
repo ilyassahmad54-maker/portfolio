@@ -1,0 +1,19 @@
+{
+  "testedAt": "2026-10-14T18:16:56.004Z",
+  "result": "passed",
+  "method": "Restore actual hosted custom archive into isolated local PGlite; pre/data/post sections, original owners and ACLs, role-membership reconstruction",
+  "tables": 9,
+  "rows": 161,
+  "revisions": 24,
+  "assets": 14,
+  "publishedProjects": 9,
+  "restrictedRuntimeAuditPassed": true,
+  "productionCutoverSqlPassed": true,
+  "oldPreviewReadDenied": true,
+  "productionPreviewAuthDenied": true,
+  "limitations": [
+    "Local PGlite is not a hosted Supabase restore",
+    "Storage bytes, hosted platform configuration and role passwords are not part of the database archive",
+    "No Production or Vercel rollback executed"
+  ]
+}

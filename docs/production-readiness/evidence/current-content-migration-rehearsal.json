@@ -1,0 +1,12 @@
+{
+  "testedAt": "2026-10-14T17:31:18.748Z",
+  "result": "passed",
+  "sourceRevisionId": "91247ce4-6471-450e-b02d-5024d94df359",
+  "sourceSequence": 19,
+  "contentSha256": "134b502f8bce38446cebdb5710011e28d1ecafe50cddaab0b4bc4afa3e2f46b1",
+  "publishedProjects": 9,
+  "managedImagesPreserved": 2,
+  "allContentFieldsEqual": true,
+  "restrictedRuntimeAuditPassed": true,
+  "scope": "Fresh local PGlite database only; original asset IDs/object keys preserved before current snapshot seed; no hosted writes"
+}

@@ -1,0 +1,47 @@
+{
+  "checkedAt": "2026-10-14T17:55:00.442Z",
+  "deploymentId": "dpl_HvpMgxXFVxytzAjWtbTJ1MRK1zQ7",
+  "window": "50m",
+  "exit": 0,
+  "recordTypes": {
+    "request": 238,
+    "summary": 1
+  },
+  "httpStatusCounts": {
+    "200": 177,
+    "201": 5,
+    "204": 2,
+    "304": 37,
+    "307": 1,
+    "400": 2,
+    "401": 7,
+    "403": 1,
+    "404": 5,
+    "409": 1
+  },
+  "recordShape": {
+    "fields": [
+      "type",
+      "data"
+    ],
+    "dataFields": [
+      "timestamp",
+      "projectId",
+      "requestId",
+      "deploymentId",
+      "environment",
+      "requestHostname",
+      "requestPath",
+      "requestMethod",
+      "httpStatus",
+      "route",
+      "pathType",
+      "cacheResult",
+      "edgeNetworkRegion",
+      "service",
+      "clientIpCountry",
+      "clientUserAgent",
+      "wafAction"
+    ]
+  }
+}

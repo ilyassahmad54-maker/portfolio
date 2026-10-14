@@ -1,0 +1,32 @@
+{
+  "testedAt": "2026-10-14T17:51:09.262Z",
+  "result": "passed",
+  "stage": "passed",
+  "provider": "Real Upstash HTTPS REST, official free three-day sandbox",
+  "checks": {
+    "realSetGetAndOneHourTtl": true,
+    "realDelAndLogout": true,
+    "actualExpiryDenial": true,
+    "cmsSessionProtectionAndCsrf": true,
+    "cmsMultiKeyEvalAndLimit": true,
+    "realConcurrentLoginLimitAndWindow": true,
+    "publishedBackupMonotonicEval": true
+  },
+  "keysCleaned": 5,
+  "productionRedisWrites": 0,
+  "productionCredentialsChanged": false,
+  "noMockRedisTransport": true,
+  "diagnostics": {
+    "loginStatuses": [
+      401,
+      401,
+      401,
+      401,
+      401,
+      429
+    ],
+    "loginTtl": 900
+  },
+  "scope": "Actual auth route handlers and CMS security/cache Lua in-process against real isolated Upstash; Production deployment smoke remains after approval",
+  "expiryMethod": "Verified real server TTL near 3600, then shortened only a synthetic sandbox session to one second and observed actual expiry denial"
+}

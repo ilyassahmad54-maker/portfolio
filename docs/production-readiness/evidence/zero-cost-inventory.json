@@ -1,0 +1,325 @@
+{
+  "checkedAt": "2026-10-14T18:34:01.402Z",
+  "vercelPlan": "hobby",
+  "deploymentCount": 17,
+  "inventoryComplete": true,
+  "deployments": [
+    {
+      "id": "dpl_HvpMgxXFVxytzAjWtbTJ1MRK1zQ7",
+      "url": "portfolio-isdejr326-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "5bb2c7deb3c6163e5db48eb208b5d2169c841f70",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_6jdHX4fvXGKMJRR6M6XNi6c6MAz4",
+      "url": "portfolio-gzvvtgu4q-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "469cc62042f4e8a9f33dc63a5cd459434d81684a",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_EDmH4bQ3C9XoRGyPE2c3cBDJ2kbD",
+      "url": "portfolio-h27vpgdm7-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "6da2708f675aa26877e5f94093d3315b33888e5a",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_E9q7LBAohBNdF9CKxRKgFAtu8Bt1",
+      "url": "portfolio-laje052tj-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "2e223c65c63f8aa6f9b9e500aef628b29c2de1f8",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_3eqPaQic264sBehSAwBZjwbQrL3d",
+      "url": "portfolio-hk0fy39lm-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "19eed814a3c3b52ad2125732ad2c86f14d6f60c4",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_39963yAbAGfyDbvWaNaAMi28Buxm",
+      "url": "portfolio-p17iw68sg-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "19eed814a3c3b52ad2125732ad2c86f14d6f60c4",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_31rL56DiNB8E24xixSHFpLgef4to",
+      "url": "portfolio-q2kxcus5h-ilyassahmad54-maker.vercel.app",
+      "target": "preview",
+      "state": "READY",
+      "commit": "5d7150aeacb92c50db23a6bb29786caaffee3b2d",
+      "branch": "feature/supabase-portfolio-cms"
+    },
+    {
+      "id": "dpl_AwGUL8oQZSYUwFSDKy63L6fL4Fb2",
+      "url": "portfolio-4eu4xom16-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "ef4f651f26fb582e0ed24e0c16601b95dc48c342",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_4m4fAYyn7Rx6ZYPs8kGqLWZSW686",
+      "url": "portfolio-q6ip92uos-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "3dcb99d5a1c94b9016d7b984db56c59f69d9d87f",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_6H7p4hAU19sVnFXaMSTXB6b61F8R",
+      "url": "portfolio-2kz173gah-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "4dbff85febfaa56638b06576d17e02576763c811",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_3j4bqyaJJdkFTsrtYh1mDBA5GJwf",
+      "url": "portfolio-b2q2ks6ol-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "1e0e1a4d0c124e0728c6be20ed84881bb50d47e9",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_8gUB1qVXgfEmFBYYVWDiSJW5GH4S",
+      "url": "portfolio-breuluu1p-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "1e0e1a4d0c124e0728c6be20ed84881bb50d47e9",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_7C7CVxmZbZ3MkvvXH2H95oVYJGnd",
+      "url": "portfolio-lipf8p2mr-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "1e0e1a4d0c124e0728c6be20ed84881bb50d47e9",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_2QL6gv6r8iu54aUkmxRCnvb58oNM",
+      "url": "portfolio-620e94der-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "076ab60e5bed8c92a49743a6ada15fc06fa4f3c2",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_HUThRoH3kDqQosqCYoFqPKbV8Z9x",
+      "url": "portfolio-n3o5om5ep-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "076ab60e5bed8c92a49743a6ada15fc06fa4f3c2",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_FAkap1UHzNqZLS2f8HkyeCBVypVG",
+      "url": "portfolio-dd0of3cnh-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "076ab60e5bed8c92a49743a6ada15fc06fa4f3c2",
+      "branch": "main"
+    },
+    {
+      "id": "dpl_7Ss5ejChAur7KHvzvxtrkTg1fewK",
+      "url": "portfolio-cneb4fr4u-ilyassahmad54-maker.vercel.app",
+      "target": "production",
+      "state": "READY",
+      "commit": "2f198d28907ab46609288c70aacfe014f5a8b225",
+      "branch": "main"
+    }
+  ],
+  "environmentScopes": [
+    {
+      "name": "SUPABASE_DATABASE_CA",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "CMS_REQUIRE_DATABASE",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "CMS_CACHE_NAMESPACE",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "CMS_PREVIEW_PROJECT_REF",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "SUPABASE_SERVICE_ROLE_KEY",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "SUPABASE_URL",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "SUPABASE_DATABASE_URL",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "ADMIN_PASSCODE",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "CMS_PREVIEW_AUTH_ENABLED",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "ADMIN_STATE_BACKEND",
+      "targets": [
+        "preview"
+      ],
+      "branch": "feature/supabase-portfolio-cms",
+      "type": "sensitive"
+    },
+    {
+      "name": "ADMIN_PASSCODE",
+      "targets": [
+        "production"
+      ],
+      "branch": null,
+      "type": "sensitive"
+    },
+    {
+      "name": "UPSTASH_REDIS_REST_URL",
+      "targets": [
+        "production"
+      ],
+      "branch": null,
+      "type": "sensitive"
+    },
+    {
+      "name": "UPSTASH_REDIS_REST_TOKEN",
+      "targets": [
+        "production"
+      ],
+      "branch": null,
+      "type": "sensitive"
+    }
+  ],
+  "catalog": {
+    "roles": [
+      {
+        "name": "portfolio_cms_owner",
+        "login": false,
+        "super": false,
+        "bypassRls": false,
+        "memberships": null
+      },
+      {
+        "name": "portfolio_cms_runtime",
+        "login": false,
+        "super": false,
+        "bypassRls": false,
+        "memberships": null
+      },
+      {
+        "name": "portfolio_cms_seed",
+        "login": false,
+        "super": false,
+        "bypassRls": false,
+        "memberships": null
+      },
+      {
+        "name": "portfolio_preview_auth_owner",
+        "login": false,
+        "super": false,
+        "bypassRls": false,
+        "memberships": null
+      },
+      {
+        "name": "portfolio_cms_preview_seed",
+        "login": true,
+        "super": false,
+        "bypassRls": false,
+        "memberships": [
+          "portfolio_cms_seed"
+        ]
+      },
+      {
+        "name": "portfolio_cms_preview_app",
+        "login": true,
+        "super": false,
+        "bypassRls": false,
+        "memberships": [
+          "portfolio_cms_runtime"
+        ]
+      }
+    ],
+    "databaseBytes": 11925171,
+    "storagePolicies": [
+      {
+        "check": "(bucket_id <> 'portfolio-images'::text)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "table": "objects",
+        "using": "(bucket_id <> 'portfolio-images'::text)",
+        "policy": "portfolio_images_no_client_access",
+        "permissive": "RESTRICTIVE"
+      },
+      {
+        "check": "(id <> 'portfolio-images'::text)",
+        "roles": [
+          "anon",
+          "authenticated"
+        ],
+        "table": "buckets",
+        "using": "(id <> 'portfolio-images'::text)",
+        "policy": "portfolio_images_no_client_bucket_access",
+        "permissive": "RESTRICTIVE"
+      }
+    ]
+  }
+}

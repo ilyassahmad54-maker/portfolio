@@ -1,0 +1,16 @@
+{
+  "auditDate": "2026-10-14",
+  "latestDeploymentBuildEvents": 94,
+  "latestBuildWarningOrErrorLines": 0,
+  "historicalSavedRuntimeLogRecords": 11,
+  "historicalDatabaseUnavailableRecords": 4,
+  "currentRuntimeLogQueryExitCode": 0,
+  "currentRuntimeLogRecordsReturned": 0,
+  "conclusion": "Supported-window log access resolved. No application messages returned. Request logs corroborate prior lifecycle; fresh protected lifecycle still blocked.",
+  "currentRuntimeApplicationRecords": 0,
+  "currentRequestLogRecords": 79,
+  "currentRequest5xx": 0,
+  "window": "50m",
+  "priorFailureReason": "2h query exceeded Hobby retention",
+  "latestEvidence": "blocker-live-access.json and preview-request-log-review.json"
+}

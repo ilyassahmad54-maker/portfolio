@@ -1,0 +1,13 @@
+{
+  "auditedAt": "2026-10-14T16:16:06.403Z",
+  "private": true,
+  "mimeTypes": [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ],
+  "limit": 4194304,
+  "registeredImagesDownloadedAndHashVerified": 9,
+  "legacyAssetsHashVerified": 10,
+  "backupDirectory": "/tmp/portfolio-readiness-storage-backup"
+}

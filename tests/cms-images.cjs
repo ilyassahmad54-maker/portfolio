@@ -81,6 +81,17 @@ test('Storage adapter uses server-only credentials, rejects URLs/keys and never 
  await assert.rejects(createStorage(fetch,()=>({url:'https://evil.test',key:'secret'})).get(path));
  const failed=createStorage(async()=>new Response('secret detail',{status:500}),()=>({url:'https://test.supabase.co',key:'secret'}));await assert.rejects(failed.get(path),e=>!e.message.includes('secret'));
 });
+test('modern Storage secret keys use apikey without presenting an opaque key as a JWT',async()=>{
+ const {createStorage}=loadModule('lib/cms/storage.ts',{'server-only':{}}),calls=[];
+ const key='sb_secret_synthetic_test_only';
+ const storage=createStorage(async(url,options)=>{
+  calls.push(options);assert.equal(options.headers.apikey,key);assert.equal('Authorization' in options.headers,false);
+  if(url.endsWith('/bucket/portfolio-images'))return Response.json({id:'portfolio-images',public:false,file_size_limit:4194304,allowed_mime_types:['image/jpeg','image/png','image/webp']});
+  return new Response(options.method==='GET'?Buffer.from('test'):null,{status:200});
+ },()=>({url:'https://test.supabase.co',key}));
+ const path='01234567-89ab-cdef-0123-456789abcdef/'+'a'.repeat(64)+'.png';
+ await storage.put(path,Buffer.from('test'),'image/png');assert.equal((await storage.get(path)).toString(),'test');assert.equal(calls.length,4);
+});
 test('all permitted formats upload and deliver with exact content types',async t=>{
  const {a}=await api(t);
  for(const format of ['jpeg','png','webp']){

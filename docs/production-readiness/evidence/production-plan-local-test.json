@@ -1,0 +1,11 @@
+{
+  "testedAt": "2026-10-14T16:18:46.451Z",
+  "result": "passed",
+  "scope": "Local PGlite only; CMS migrations 001-007 without Preview auth 008",
+  "productionLoginTemplate": true,
+  "reviewedSeedTemplate": true,
+  "publishedProjects": 8,
+  "restrictedRuntimeCatalogAudit": true,
+  "runtimeSeedDenied": true,
+  "duplicateLoginSetupRefused": true
+}

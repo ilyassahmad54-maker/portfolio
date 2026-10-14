@@ -1,0 +1,67 @@
+{
+  "checkedAt": "2026-10-14T18:39:20.107Z",
+  "project": {
+    "id": "prj_8LYUIcb6Kk4uWMYf8AV7PbQUf2bc",
+    "name": "portfolio",
+    "productionBranch": "main",
+    "productionTargetId": "dpl_AwGUL8oQZSYUwFSDKy63L6fL4Fb2",
+    "autoAssignCustomDomains": true
+  },
+  "publicAlias": {
+    "hostname": "portfolio-woad-nu-owt4y7t889.vercel.app",
+    "projectId": "prj_8LYUIcb6Kk4uWMYf8AV7PbQUf2bc",
+    "deploymentId": "dpl_AwGUL8oQZSYUwFSDKy63L6fL4Fb2"
+  },
+  "publication": {
+    "revision": "9d1c6846-4d59-42ef-8d16-587dbad47cd7",
+    "sequence": 24,
+    "projects": 9,
+    "hasDraft": false,
+    "hash": "134b502f8bce38446cebdb5710011e28d1ecafe50cddaab0b4bc4afa3e2f46b1",
+    "projectsAndImages": [
+      {
+        "title": "Climate Change Dashboard",
+        "image": "/api/assets/2998124e-9543-4a97-b48f-f756c8daeb14"
+      },
+      {
+        "title": "Unemployment Data Analysis Dashboard",
+        "image": "/assets/unemployment-c3db711db38ef2016395.png"
+      },
+      {
+        "title": "RiskRadar – AI-Powered Workplace Hazard Detection & Safety Management System",
+        "image": "/assets/riskradar-6b4d1ab9f5bdadbcf9ae.jpg"
+      },
+      {
+        "title": "Multimodal AI Pipeline",
+        "image": "/api/assets/0bfdbee9-bceb-46b7-885d-cb114195b849"
+      },
+      {
+        "title": "Real-time Helmet Detection (YOLO)",
+        "image": "/assets/projects/helmet-detection.jpg"
+      },
+      {
+        "title": "DiabetesCare Prediction System",
+        "image": "/assets/projects/diabetes-care.jpg"
+      },
+      {
+        "title": "Customer Segmentation Analysis",
+        "image": "/assets/projects/customer-segmentation.jpg"
+      },
+      {
+        "title": "Student AI Usage Analytics Dashboard",
+        "image": "/assets/projects/student-ai-dashboard.jpg"
+      },
+      {
+        "title": "Heart Disease Predictive System",
+        "image": "/assets/projects/heart-disease-prediction.jpg"
+      }
+    ]
+  },
+  "backup": {
+    "filesVerified": 34,
+    "encryptedChecksumVerified": true,
+    "currentPublicationMatchesBackup": true
+  },
+  "productionRuntimeProvisioned": false,
+  "hostedMutations": 0
+}

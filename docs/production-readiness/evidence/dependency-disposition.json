@@ -1,0 +1,75 @@
+{
+  "checkedAt": "2026-10-14T16:39:19.020Z",
+  "fullAudit": {
+    "exit": 1,
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 7,
+      "critical": 0,
+      "total": 7
+    }
+  },
+  "runtimeAudit": {
+    "exit": 0,
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "traceCount": 23,
+  "affected": [
+    {
+      "name": "@next/eslint-plugin-next",
+      "installedVersion": "15.5.27",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    },
+    {
+      "name": "braces",
+      "installedVersion": "3.0.3",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    },
+    {
+      "name": "chokidar",
+      "installedVersion": "3.6.0",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    },
+    {
+      "name": "eslint-config-next",
+      "installedVersion": "15.5.27",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    },
+    {
+      "name": "fast-glob",
+      "installedVersion": "3.3.3",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    },
+    {
+      "name": "micromatch",
+      "installedVersion": "4.0.8",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    },
+    {
+      "name": "tailwindcss",
+      "installedVersion": "3.4.19",
+      "devOnly": true,
+      "productionTraceReferences": 0
+    }
+  ],
+  "safePatchedBracesReleaseAvailable": false,
+  "registryLatestBraces": "3.0.3",
+  "disposition": "Documented build-tool exception; no suppression, major/downgrade workaround, override or dependency change applied.",
+  "advisory": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+  "reviewBy": "2026-10-28"
+}
