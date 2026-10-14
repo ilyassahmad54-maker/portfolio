@@ -69,3 +69,30 @@ test('an upstream connection failure fails closed and the next request reconnect
   assert.equal(contentCalls,0);assert.equal(ended,1);
   assert.equal(await query('SELECT cms.read_state() AS result'),'recovered');assert.equal(created,2);assert.equal(contentCalls,1);
 });
+
+test('a resumed idle instance replaces stale sockets before executing its next operation',async()=>{
+  const originalNow=Date.now;let now=1000,created=0,ended=0,executed=0;
+  Date.now=()=>now;
+  try{
+    const query=createCmsQuery(()=>{created++;return {reserve:async()=>({unsafe:async sql=>{
+      if(sql.includes('FROM pg_roles'))return [{allowed:true}];executed++;return [{result:'ok'}];
+    },release:()=>{}}),end:async()=>{ended++;}};},()=>uri);
+    await query('SELECT cms.read_state() AS result');now+=11000;
+    await query('SELECT cms.read_state() AS result');
+    assert.equal(created,2);assert.equal(ended,1);assert.equal(executed,2);
+  }finally{Date.now=originalNow;}
+});
+
+test('idle-age checks never close a pool while a mutation is still in flight',async()=>{
+  const originalNow=Date.now;let now=1000,created=0,ended=0,complete;
+  Date.now=()=>now;
+  try{
+    const query=createCmsQuery(()=>{created++;return {reserve:async()=>({unsafe:async sql=>{
+      if(sql.includes('FROM pg_roles'))return [{allowed:true}];
+      return sql.includes('publish_draft')?new Promise(resolve=>{complete=resolve;}):[{result:'read'}];
+    },release:()=>{}}),end:async()=>{ended++;}};},()=>uri);
+    const mutation=query('SELECT cms.publish_draft(1,NULL,NULL) AS result');await new Promise(resolve=>setImmediate(resolve));now+=11000;
+    assert.equal(await query('SELECT cms.read_state() AS result'),'read');assert.equal(created,1);assert.equal(ended,0);
+    complete([{result:'committed'}]);assert.equal(await mutation,'committed');
+  }finally{Date.now=originalNow;}
+});

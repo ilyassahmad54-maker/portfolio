@@ -5,7 +5,16 @@ import { assertPreviewConfiguration } from './preview';
 
 export function createCmsQuery(factory: typeof postgres = postgres, uriProvider = () => process.env.SUPABASE_DATABASE_URL, deadlineMs = 15000) {
   let client: ReturnType<typeof postgres> | undefined;
+  let activeQueries = 0;
+  let lastActivity = 0;
   function connection() {
+    // Vercel can suspend idle timers while a function is frozen. Do not hand a
+    // resumed request an old idle socket; active work keeps its existing pool.
+    if (client && activeQueries === 0 && Date.now() - lastActivity > 10000) {
+      const idle = client;
+      client = undefined;
+      void idle.end({ timeout: 0 }).catch(() => {});
+    }
     if (client) return client;
     try {
       assertPreviewConfiguration();
@@ -27,6 +36,7 @@ export function createCmsQuery(factory: typeof postgres = postgres, uriProvider 
   }
   return async function query(statement: string, parameters: (string | number | boolean | null)[] = []): Promise<unknown> {
     const database = connection();
+    activeQueries++;
     let expired = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
     const work = async () => {
@@ -72,7 +82,7 @@ export function createCmsQuery(factory: typeof postgres = postgres, uriProvider 
       }
       throw failure;
     }
-    finally { if (timer) clearTimeout(timer); }
+    finally { if (timer) clearTimeout(timer); activeQueries--; lastActivity = Date.now(); }
   };
 }
 
